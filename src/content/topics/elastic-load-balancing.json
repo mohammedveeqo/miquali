@@ -4,26 +4,52 @@
   "sectionId": "networking",
   "clusterId": "cluster-5",
   "order": 13,
-  "explanation": "Elastic Load Balancing (ELB) automatically distributes incoming application traffic across multiple targets such as EC2 instances, containers, and IP addresses. AWS offers three types: Application Load Balancer (ALB), Network Load Balancer (NLB), and Gateway Load Balancer (GWLB).",
-  "analogy": "A load balancer is like a restaurant host who seats guests (requests) at different tables (servers) to ensure no single table is overwhelmed while others sit empty.",
-  "diagram": "/diagrams/elb-overview.svg",
+  "explanation": "Elastic Load Balancing (ELB) automatically distributes incoming application traffic across multiple targets — EC2 instances, containers, IP addresses, and Lambda functions — in one or more Availability Zones. AWS offers three active load balancer types, each optimized for different use cases.\n\n**Application Load Balancer (ALB)** — Layer 7 (HTTP/HTTPS):\n- Content-based routing: path-based (/api/* → service A), host-based (api.example.com → service B), HTTP header/method routing\n- Native support for WebSockets, HTTP/2, gRPC\n- Integrates with WAF, Cognito for authentication, and supports sticky sessions\n- Ideal for microservices and container-based architectures (ECS, EKS)\n\n**Network Load Balancer (NLB)** — Layer 4 (TCP/UDP/TLS):\n- Ultra-low latency (millions of requests per second)\n- Static IP per AZ and supports Elastic IP assignment\n- Preserves source IP address by default\n- Ideal for TCP traffic, gaming, IoT, and real-time streaming\n- Required as the target for PrivateLink endpoint services\n\n**Gateway Load Balancer (GWLB)** — Layer 3 (IP):\n- Deploys and scales third-party virtual appliances (firewalls, IDS/IPS)\n- Uses GENEVE encapsulation protocol\n- Transparent to the application — traffic is routed through appliances and back\n- Integrates with Gateway Load Balancer Endpoints (GWLBe) in other VPCs\n\nFor the SAP-C02 exam, ELB questions test choosing the right load balancer type, cross-zone load balancing behavior, connection draining, health check configuration, and integration patterns with Auto Scaling, ECS, and PrivateLink.",
+  "analogy": "Load balancers are like a restaurant host managing a busy dining room. The ALB host reads your reservation details (HTTP headers, path) and seats you at the right section (target group). The NLB host just counts heads and seats people as fast as possible at any available table — no reading reservations, just raw speed. The GWLB host routes every guest through a security screening (appliance) before they reach their table, then routes them back out the same way.",
+  "diagram": "┌────────────────── Load Balancer Types ──────────────────────────┐\n│                                                                  │\n│  ┌─── ALB (Layer 7) ─────────────────────────────────────────┐  │\n│  │                                                            │  │\n│  │  Client → ALB → Path-based routing:                       │  │\n│  │                  /api/*    → Target Group A (API servers)  │  │\n│  │                  /static/* → Target Group B (CDN origin)   │  │\n│  │                  /ws/*     → Target Group C (WebSocket)    │  │\n│  └────────────────────────────────────────────────────────────┘  │\n│                                                                  │\n│  ┌─── NLB (Layer 4) ─────────────────────────────────────────┐  │\n│  │                                                            │  │\n│  │  Client → NLB (Static IP / EIP) → TCP targets             │  │\n│  │           │                                                │  │\n│  │           ├─► Instance A (preserves source IP)             │  │\n│  │           ├─► Instance B                                   │  │\n│  │           └─► Instance C                                   │  │\n│  │                                                            │  │\n│  │  Use case: PrivateLink, gaming, IoT, ultra-low latency    │  │\n│  └────────────────────────────────────────────────────────────┘  │\n│                                                                  │\n│  ┌─── GWLB (Layer 3) ────────────────────────────────────────┐  │\n│  │                                                            │  │\n│  │  Traffic → GWLBe → GWLB → [Firewall Appliance] → GWLB    │  │\n│  │                                          │                 │  │\n│  │                                          ▼                 │  │\n│  │                                    Back to destination     │  │\n│  │                                                            │  │\n│  │  Use case: Inline security inspection (IDS/IPS/Firewall)  │  │\n│  └────────────────────────────────────────────────────────────┘  │\n│                                                                  │\n│  Cross-Zone Load Balancing:                                      │\n│  ┌─── AZ-a ────┐  ┌─── AZ-b ────┐                              │\n│  │ 2 instances  │  │ 8 instances  │                              │\n│  │ Each gets 10%│  │ Each gets 10%│  ← Even distribution        │\n│  └──────────────┘  └──────────────┘     across ALL targets       │\n└──────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "ALB operates at Layer 7 (HTTP/HTTPS) with content-based routing",
-    "NLB operates at Layer 4 (TCP/UDP) with ultra-low latency",
-    "GWLB operates at Layer 3 for third-party virtual appliances",
-    "All ELB types support cross-zone load balancing and health checks"
+    "ALB (Layer 7): content-based routing (path, host, header, query string), WebSocket/gRPC support, WAF integration — ideal for microservices",
+    "NLB (Layer 4): ultra-low latency, static IPs per AZ, preserves source IP, millions of RPS — required for PrivateLink endpoint services",
+    "GWLB (Layer 3): transparent inline inspection using GENEVE encapsulation — deploys and scales third-party security appliances",
+    "Cross-zone load balancing distributes traffic evenly across all targets in all AZs (enabled by default on ALB, optional on NLB)",
+    "Connection draining (deregistration delay) allows in-flight requests to complete before removing a target — default 300 seconds",
+    "ALB supports weighted target groups for blue/green deployments and canary releases",
+    "NLB supports TLS termination and can be assigned Elastic IPs for allowlisting by partners"
   ],
   "examKeywords": [
     {
       "term": "Application Load Balancer",
       "type": "service-reference",
-      "definition": "A Layer 7 load balancer supporting content-based routing, host-based routing, path-based routing, and WebSocket connections.",
+      "definition": "A Layer 7 load balancer supporting content-based routing (path, host, header), WebSocket, gRPC, WAF integration, and Cognito authentication.",
       "svgDiagram": "/diagrams/mini/alb-icon.svg"
+    },
+    {
+      "term": "Network Load Balancer",
+      "type": "service-reference",
+      "definition": "A Layer 4 load balancer providing ultra-low latency, static IPs, source IP preservation, and millions of requests per second. Required for PrivateLink."
+    },
+    {
+      "term": "Gateway Load Balancer",
+      "type": "service-reference",
+      "definition": "A Layer 3 load balancer using GENEVE encapsulation to transparently route traffic through third-party virtual appliances (firewalls, IDS/IPS)."
+    },
+    {
+      "term": "target group",
+      "type": "architecture-term",
+      "definition": "A logical grouping of targets (instances, IPs, Lambda functions) that a load balancer routes traffic to based on listener rules and health checks."
+    },
+    {
+      "term": "cross-zone load balancing",
+      "type": "exam-signal",
+      "definition": "A feature that distributes traffic evenly across all registered targets in all enabled AZs, regardless of how many targets are in each AZ."
     }
   ],
   "commonMistakes": [
-    "Using ALB when ultra-low latency is required — NLB is better for TCP/UDP performance",
-    "Not enabling cross-zone load balancing, leading to uneven traffic distribution"
+    "Using ALB when ultra-low latency or static IPs are required — NLB is the correct choice for TCP/UDP performance and IP allowlisting",
+    "Not enabling cross-zone load balancing on NLB — without it, each AZ receives equal traffic regardless of target count, causing uneven load",
+    "Choosing ALB for PrivateLink endpoint services — only NLB (or GWLB) can back an endpoint service",
+    "Setting deregistration delay too low — in-flight requests may be dropped if targets are removed before completing",
+    "Using GWLB for simple load balancing — it is designed exclusively for inline appliance inspection, not general-purpose traffic distribution"
   ],
-  "relatedTopics": ["subnets", "security-groups", "route-53"]
+  "relatedTopics": ["subnets", "security-groups", "route-53", "privatelink", "global-accelerator"]
 }

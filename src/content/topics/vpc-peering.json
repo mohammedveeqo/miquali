@@ -4,25 +4,46 @@
   "sectionId": "networking",
   "clusterId": "cluster-3",
   "order": 8,
-  "explanation": "VPC peering is a networking connection between two VPCs that enables routing traffic between them using private IPv4 or IPv6 addresses. Instances in either VPC can communicate as if they are within the same network.",
-  "analogy": "VPC peering is like building a private bridge between two neighboring properties — traffic flows directly between them without going through the public road.",
-  "diagram": "/diagrams/vpc-peering-overview.svg",
+  "explanation": "VPC peering is a one-to-one networking connection between two VPCs that enables routing traffic between them using private IPv4 or IPv6 addresses. Instances in either VPC can communicate as if they are within the same network. Peering connections can be established between VPCs in the same account, different accounts, or even different AWS Regions (inter-Region peering).\n\nThe critical architectural constraint of VPC peering is that it is **non-transitive**. If VPC-A peers with VPC-B, and VPC-B peers with VPC-C, VPC-A cannot reach VPC-C through VPC-B. Each pair of VPCs that needs to communicate requires its own dedicated peering connection. This creates an O(n²) scaling problem — for n VPCs to be fully meshed, you need n(n-1)/2 peering connections.\n\nPeering requirements and limitations:\n- **No overlapping CIDRs**: The CIDR blocks of peered VPCs must not overlap, or the peering connection cannot be established\n- **Route table updates**: After creating a peering connection, you must manually add routes in both VPCs' route tables pointing to the peering connection\n- **No edge-to-edge routing**: You cannot use a peering connection to route traffic through one VPC to reach resources beyond it (e.g., an IGW, NAT Gateway, or VPN in the peer VPC)\n- **No bandwidth bottleneck**: Traffic between peered VPCs in the same Region has no single point of failure and no bandwidth limit. Inter-Region peering uses encrypted traffic over the AWS backbone\n- **Security groups**: In same-Region peering, you can reference the peer VPC's security groups in your rules\n\nFor the SAP-C02 exam, VPC peering questions test understanding of non-transitivity (when to use Transit Gateway instead), CIDR overlap constraints, edge-to-edge routing limitations, and the scaling challenges of full-mesh peering topologies.",
+  "analogy": "VPC peering is like building a private bridge between two neighboring properties. Traffic flows directly between them without going through the public road (internet). However, these bridges are strictly point-to-point — if Property A has a bridge to Property B, and Property B has a bridge to Property C, you cannot walk from A to C via B's bridge. Each pair of properties that wants to connect needs its own dedicated bridge. When you have many properties, the number of bridges becomes unmanageable.",
+  "diagram": "┌─────────────────── Non-Transitive Peering ───────────────────┐\n│                                                               │\n│  ┌─── VPC-A ───┐         ┌─── VPC-B ───┐                    │\n│  │ 10.0.0.0/16 │◄──pcx──►│ 172.16.0.0/16│                    │\n│  └──────────────┘         └──────┬───────┘                    │\n│                                   │                           │\n│         ✗ No transit!            pcx                          │\n│         A cannot reach C          │                           │\n│         through B                 ▼                           │\n│                           ┌─── VPC-C ───┐                    │\n│                           │ 192.168.0.0/16│                    │\n│                           └──────────────┘                    │\n│                                                               │\n├───────────────── Full Mesh (3 VPCs = 3 connections) ─────────┤\n│                                                               │\n│  ┌─── VPC-A ───┐                                             │\n│  │ 10.0.0.0/16 │◄────────────────pcx-ac──────────────►       │\n│  └──────┬───────┘                                     │      │\n│         │                                             │      │\n│       pcx-ab                                          │      │\n│         │                                             │      │\n│         ▼                                             ▼      │\n│  ┌─── VPC-B ───┐◄──────pcx-bc──────►┌─── VPC-C ───┐        │\n│  │ 172.16.0.0/16│                     │ 192.168.0.0/16│        │\n│  └──────────────┘                     └──────────────┘        │\n│                                                               │\n│  Scaling: 10 VPCs = 45 connections, 100 VPCs = 4,950!        │\n│  ► Use Transit Gateway for many-to-many connectivity         │\n└───────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "VPC peering is non-transitive — if A peers with B and B peers with C, A cannot reach C through B",
-    "Can peer across AWS accounts and across Regions (inter-Region peering)",
-    "CIDR blocks of peered VPCs must not overlap",
-    "No single point of failure or bandwidth bottleneck"
+    "VPC peering is non-transitive — each pair of VPCs that needs to communicate requires its own dedicated peering connection",
+    "CIDR blocks of peered VPCs must not overlap; overlapping CIDRs prevent peering connection creation",
+    "Route tables in both VPCs must be manually updated to add routes pointing to the peering connection",
+    "No edge-to-edge routing — you cannot transit through a peer VPC to reach its IGW, NAT, VPN, or Direct Connect",
+    "Same-Region peering has no bandwidth limit and no single point of failure; inter-Region peering is encrypted over the AWS backbone",
+    "In same-Region peering, security group rules can reference the peer VPC's security groups by ID",
+    "Full-mesh peering does not scale — for n VPCs, you need n(n-1)/2 connections. Use Transit Gateway for 3+ VPCs"
   ],
   "examKeywords": [
     {
       "term": "VPC peering",
       "type": "architecture-term",
-      "definition": "A one-to-one networking connection between two VPCs enabling private IP communication. Non-transitive and requires non-overlapping CIDRs."
+      "definition": "A one-to-one, non-transitive networking connection between two VPCs enabling private IP communication. Requires non-overlapping CIDRs and manual route table updates."
+    },
+    {
+      "term": "non-transitive routing",
+      "type": "exam-signal",
+      "definition": "A routing constraint where traffic cannot pass through an intermediate network. In VPC peering, VPC-A cannot reach VPC-C through VPC-B even if both peering connections exist."
+    },
+    {
+      "term": "edge-to-edge routing",
+      "type": "exam-signal",
+      "definition": "Routing traffic through a peered VPC to reach resources beyond it (IGW, NAT, VPN). This is NOT supported in VPC peering."
+    },
+    {
+      "term": "inter-Region peering",
+      "type": "architecture-term",
+      "definition": "VPC peering between VPCs in different AWS Regions. Traffic is encrypted and travels over the AWS global backbone network."
     }
   ],
   "commonMistakes": [
-    "Assuming VPC peering is transitive — it is not; each pair needs its own peering connection",
-    "Forgetting to update route tables in both VPCs after creating a peering connection"
+    "Assuming VPC peering is transitive — it is strictly point-to-point; use Transit Gateway for hub-and-spoke or full-mesh topologies",
+    "Forgetting to update route tables in BOTH VPCs after creating a peering connection — routes are not automatically added",
+    "Attempting to peer VPCs with overlapping CIDR blocks — this is not possible and requires CIDR re-planning",
+    "Trying to use a peer VPC's NAT Gateway or Internet Gateway (edge-to-edge routing) — this is explicitly not supported",
+    "Using full-mesh VPC peering for more than 3-4 VPCs — the O(n²) connection count becomes unmanageable; Transit Gateway is the correct solution"
   ],
-  "relatedTopics": ["what-is-vpc", "transit-gateway", "route-tables"]
+  "relatedTopics": ["what-is-vpc", "transit-gateway", "route-tables", "direct-connect"]
 }

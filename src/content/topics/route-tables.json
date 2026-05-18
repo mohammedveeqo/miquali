@@ -4,25 +4,46 @@
   "sectionId": "networking",
   "clusterId": "cluster-2",
   "order": 5,
-  "explanation": "A route table contains a set of rules (routes) that determine where network traffic from your subnet or gateway is directed. Each subnet must be associated with a route table, which controls the routing for that subnet.",
-  "analogy": "Route tables are like road signs at intersections — they tell traffic which direction to go based on the destination address.",
-  "diagram": "/diagrams/route-tables-overview.svg",
+  "explanation": "A route table contains a set of rules (called routes) that determine where network traffic from your subnets or gateways is directed. Every subnet in a VPC must be associated with exactly one route table, which controls the routing for that subnet. A VPC can have multiple route tables, enabling different subnets to have different routing behaviors.\n\nEach route in a table specifies a destination (CIDR block) and a target (where to send matching traffic). Routes are evaluated using **longest prefix match** — the most specific route that matches the destination IP wins.\n\nKey route table concepts:\n- **Main route table**: Automatically created with the VPC. Any subnet not explicitly associated with a custom route table uses the main route table\n- **Custom route tables**: Created for specific routing needs (e.g., public subnets route 0.0.0.0/0 to IGW, private subnets route 0.0.0.0/0 to NAT)\n- **Local route**: Every route table has an immutable local route for the VPC CIDR, enabling intra-VPC communication\n- **Route propagation**: Routes from a Virtual Private Gateway (VPN) or Transit Gateway can be automatically propagated into a route table\n- **Gateway route table**: Associated with an Internet Gateway or Virtual Private Gateway to control traffic entering the VPC\n\nFor the SAP-C02 exam, route tables are tested in the context of subnet classification (public vs. private), Transit Gateway routing, VPN failover, and troubleshooting connectivity. Understanding that the route table — not the subnet itself — determines whether a subnet is public or private is a critical distinction.",
+  "analogy": "Route tables are like the GPS navigation system in your car. When you enter a destination (packet's target IP), the GPS checks its map (route table) and picks the most specific matching road (longest prefix match). If you want to go to a local address, it keeps you on neighborhood streets (local route). If you want to reach somewhere outside the neighborhood, it directs you to the highway on-ramp (IGW or NAT Gateway).",
+  "diagram": "┌──────────────────────── VPC (10.0.0.0/16) ────────────────────────┐\n│                                                                    │\n│  ┌─ Public Subnet Route Table ─┐  ┌─ Private Subnet Route Table ─┐│\n│  │                              │  │                               ││\n│  │  Destination    │ Target     │  │  Destination    │ Target      ││\n│  │  ───────────────┼──────────  │  │  ───────────────┼───────────  ││\n│  │  10.0.0.0/16   │ local      │  │  10.0.0.0/16   │ local       ││\n│  │  0.0.0.0/0     │ igw-xxx    │  │  0.0.0.0/0     │ nat-xxx     ││\n│  │  172.16.0.0/16 │ pcx-xxx    │  │  172.16.0.0/16 │ pcx-xxx     ││\n│  │                              │  │                               ││\n│  └──────────────────────────────┘  └───────────────────────────────┘│\n│                                                                    │\n│  Route Evaluation (longest prefix match):                          │\n│                                                                    │\n│  Packet to 10.0.2.5   → matches 10.0.0.0/16 → local (intra-VPC)  │\n│  Packet to 172.16.1.1 → matches 172.16.0.0/16 → peering           │\n│  Packet to 8.8.8.8    → matches 0.0.0.0/0 → IGW or NAT           │\n│                                                                    │\n└────────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Every subnet must be associated with exactly one route table",
-    "The main route table is automatically assigned to subnets without explicit association",
-    "Routes are evaluated using longest prefix match",
-    "Local route (VPC CIDR) is always present and cannot be removed"
+    "Every subnet must be associated with exactly one route table — if not explicitly associated, it uses the VPC's main route table",
+    "Routes are evaluated using longest prefix match: the most specific CIDR that matches the destination IP wins",
+    "The local route (VPC CIDR → local) is immutable and always present, enabling intra-VPC communication",
+    "A subnet is 'public' because its route table has 0.0.0.0/0 → IGW, not because of any subnet property",
+    "Route propagation allows VPN or Transit Gateway routes to be automatically added to a route table",
+    "Gateway route tables can be associated with IGW/VGW to intercept traffic entering the VPC (used with Network Firewall or appliances)",
+    "You cannot have two routes with the same destination CIDR in a single route table — the more specific route or the one with higher priority target wins"
   ],
   "examKeywords": [
     {
-      "term": "route table",
+      "term": "longest prefix match",
+      "type": "exam-signal",
+      "definition": "The routing algorithm that selects the most specific route (longest CIDR prefix) matching a packet's destination IP. A /24 route takes priority over a /16 route."
+    },
+    {
+      "term": "route propagation",
       "type": "architecture-term",
-      "definition": "A set of routing rules that determine where network traffic is directed based on destination IP address."
+      "definition": "A feature that automatically adds routes learned from a Virtual Private Gateway or Transit Gateway attachment into a route table."
+    },
+    {
+      "term": "main route table",
+      "type": "architecture-term",
+      "definition": "The default route table created with a VPC. Subnets without an explicit route table association implicitly use the main route table."
+    },
+    {
+      "term": "gateway route table",
+      "type": "exam-signal",
+      "definition": "A route table associated with an Internet Gateway or Virtual Private Gateway, used to route incoming traffic to a middlebox appliance like Network Firewall."
     }
   ],
   "commonMistakes": [
-    "Modifying the main route table instead of creating custom route tables for specific subnets",
-    "Not understanding longest prefix match — more specific routes take priority"
+    "Modifying the main route table to add an IGW route — this makes ALL subnets without explicit associations public, which is a security risk",
+    "Not understanding longest prefix match — a route to 10.0.1.0/24 takes priority over 10.0.0.0/16 for traffic destined to 10.0.1.5",
+    "Forgetting to update route tables in both VPCs after creating a peering connection — routes are not automatically added",
+    "Assuming route propagation is enabled by default — it must be explicitly enabled on each route table that should receive propagated routes",
+    "Not creating separate route tables for public and private subnets, leading to unintended internet exposure"
   ],
-  "relatedTopics": ["subnets", "internet-gateway", "nat-gateway", "vpc-peering"]
+  "relatedTopics": ["subnets", "internet-gateway", "nat-gateway", "vpc-peering", "transit-gateway"]
 }

@@ -4,25 +4,46 @@
   "sectionId": "networking",
   "clusterId": "cluster-4",
   "order": 12,
-  "explanation": "AWS PrivateLink provides private connectivity between VPCs, supported AWS services, and your on-premises networks without exposing traffic to the public internet. It creates an elastic network interface in your subnet.",
-  "analogy": "PrivateLink is like a private delivery tunnel between buildings — packages (data) travel directly without ever going through the public street.",
-  "diagram": "/diagrams/privatelink-overview.svg",
+  "explanation": "AWS PrivateLink provides private connectivity between VPCs, supported AWS services, and your on-premises networks without exposing traffic to the public internet. It works by creating an Elastic Network Interface (ENI) with a private IP address in your subnet, serving as an entry point for traffic destined to the service.\n\nPrivateLink is the underlying technology behind **Interface VPC Endpoints**. When you create an interface endpoint, AWS provisions ENIs in your specified subnets. Traffic to the service flows through these ENIs, staying entirely within the AWS network.\n\nKey use cases:\n- **Accessing AWS services privately**: Connect to services like CloudWatch, KMS, STS, or ECR without internet access\n- **Exposing your own services**: Create an endpoint service backed by a Network Load Balancer (NLB) or Gateway Load Balancer (GWLB), allowing other VPCs or accounts to consume your service privately\n- **Third-party SaaS**: Access partner services listed on AWS Marketplace via PrivateLink without VPC peering or internet exposure\n- **Cross-account access**: Service consumers and providers can be in different accounts — no need for VPC peering or shared networking\n\nPrivateLink architecture:\n- **Service provider**: Deploys a service behind an NLB/GWLB and creates an endpoint service\n- **Service consumer**: Creates an interface endpoint in their VPC, which provisions ENIs with private IPs\n- **DNS**: Private DNS can be enabled so that the default service endpoint (e.g., ec2.us-east-1.amazonaws.com) resolves to the private ENI IP\n\nFor the SAP-C02 exam, PrivateLink questions test private access to AWS services without internet, cross-account service exposure patterns, and choosing between PrivateLink (interface endpoints) vs. Gateway endpoints for S3/DynamoDB.",
+  "analogy": "PrivateLink is like a private delivery tunnel between buildings in a campus. Instead of sending packages through the public postal system (internet), you install a pneumatic tube (ENI) directly from your building to the service building. Packages travel instantly through the private tunnel — they never touch the public street. Anyone in the campus (AWS network) can install their own tube to the same service, and the service provider controls who gets access.",
+  "diagram": "┌─── Service Consumer VPC ───────────────────────────────────────┐\n│                                                                 │\n│  ┌─ Private Subnet ─────────────────────────────────────────┐  │\n│  │                                                           │  │\n│  │  [Application]                                            │  │\n│  │       │                                                   │  │\n│  │       │ api.example.com → 10.0.1.55 (private DNS)        │  │\n│  │       ▼                                                   │  │\n│  │  ┌─────────────────────────────────┐                     │  │\n│  │  │  Interface Endpoint (ENI)       │                     │  │\n│  │  │  Private IP: 10.0.1.55          │                     │  │\n│  │  │  Security Group: sg-endpoint    │                     │  │\n│  │  └──────────────┬──────────────────┘                     │  │\n│  │                  │                                        │  │\n│  └──────────────────┼────────────────────────────────────────┘  │\n│                     │  (AWS PrivateLink — private network)      │\n└─────────────────────┼───────────────────────────────────────────┘\n                      │\n                      ▼\n┌─── Service Provider VPC (or AWS Service) ──────────────────────┐\n│                                                                 │\n│  ┌─────────────────────────────────────────────────────────┐   │\n│  │  Endpoint Service                                        │   │\n│  │  (backed by NLB or AWS-managed)                         │   │\n│  │                                                          │   │\n│  │  ┌─── NLB ───┐                                         │   │\n│  │  │            │──► [Service Instances]                   │   │\n│  │  └────────────┘                                         │   │\n│  └─────────────────────────────────────────────────────────┘   │\n│                                                                 │\n│  No VPC peering needed. No internet exposure.                  │\n│  Consumer and provider can be in different accounts.            │\n└─────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Traffic stays on the AWS network — never traverses the public internet",
-    "Uses interface VPC endpoints (ENIs in your subnet)",
-    "Supports access to AWS services and third-party SaaS via AWS Marketplace",
-    "No need for IGW, NAT, VPN, or Direct Connect for the connected service"
+    "PrivateLink keeps traffic entirely within the AWS network — no internet gateway, NAT, VPN, or Direct Connect needed for the connected service",
+    "Creates interface endpoints (ENIs with private IPs) in your subnet — you can attach security groups to control access",
+    "Enables cross-account service exposure: providers create endpoint services backed by NLB/GWLB, consumers create interface endpoints",
+    "Private DNS resolves the service's default hostname to the private ENI IP, requiring no application code changes",
+    "Interface endpoints are AZ-scoped — create one in each AZ where your applications run for high availability",
+    "Charged per endpoint per AZ (~$0.01/hr) plus data processed (~$0.01/GB) — more expensive than free Gateway endpoints for S3/DynamoDB",
+    "Supports access from on-premises via Direct Connect or VPN — on-premises DNS must resolve to the endpoint's private IP"
   ],
   "examKeywords": [
     {
       "term": "PrivateLink",
       "type": "service-reference",
-      "definition": "A technology providing private connectivity between VPCs and services using interface endpoints (ENIs), keeping traffic off the public internet."
+      "definition": "AWS technology providing private connectivity between VPCs and services via interface endpoints (ENIs), keeping all traffic on the AWS network without internet exposure."
+    },
+    {
+      "term": "interface endpoint",
+      "type": "architecture-term",
+      "definition": "A VPC endpoint powered by PrivateLink that creates an ENI with a private IP in your subnet, enabling private access to AWS services or custom endpoint services."
+    },
+    {
+      "term": "endpoint service",
+      "type": "architecture-term",
+      "definition": "A service you create in your VPC (backed by NLB or GWLB) that other VPCs can access via PrivateLink interface endpoints, without VPC peering."
+    },
+    {
+      "term": "private DNS",
+      "type": "exam-signal",
+      "definition": "An interface endpoint feature that overrides public DNS resolution so the service's default hostname resolves to the endpoint's private IP address."
     }
   ],
   "commonMistakes": [
-    "Confusing PrivateLink (interface endpoints) with Gateway endpoints (S3/DynamoDB only)",
-    "Not understanding that PrivateLink endpoints are AZ-scoped"
+    "Confusing PrivateLink interface endpoints (ENI-based, charged, 100+ services) with Gateway endpoints (route-table-based, free, S3/DynamoDB only)",
+    "Not enabling private DNS on interface endpoints — without it, applications must use the endpoint-specific DNS name instead of the default service URL",
+    "Forgetting that interface endpoints are AZ-scoped — if your endpoint is only in AZ-a but your application runs in AZ-b, cross-AZ charges apply",
+    "Using VPC peering to expose a service to another account when PrivateLink provides better isolation and does not require CIDR compatibility",
+    "Not attaching security groups to interface endpoints — they accept all traffic by default if no security group is configured"
   ],
-  "relatedTopics": ["vpc-endpoints", "what-is-vpc", "direct-connect"]
+  "relatedTopics": ["vpc-endpoints", "what-is-vpc", "direct-connect", "elastic-load-balancing"]
 }

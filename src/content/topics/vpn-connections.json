@@ -4,25 +4,51 @@
   "sectionId": "networking",
   "clusterId": "cluster-4",
   "order": 10,
-  "explanation": "AWS Site-to-Site VPN creates an encrypted connection between your on-premises network and your AWS VPC over the public internet. It uses IPsec tunnels for secure communication.",
-  "analogy": "A VPN connection is like a secure, encrypted tunnel through a public highway — your data travels over the internet but is completely hidden from other traffic.",
-  "diagram": "/diagrams/vpn-connections-overview.svg",
+  "explanation": "AWS Site-to-Site VPN creates an encrypted IPsec connection between your on-premises network and your AWS VPC (or Transit Gateway) over the public internet. It provides secure hybrid connectivity without the cost and lead time of a dedicated physical connection like Direct Connect.\n\nEach Site-to-Site VPN connection consists of **two IPsec tunnels** for redundancy, each terminating at a different AWS endpoint in separate Availability Zones. If one tunnel fails, traffic automatically fails over to the second tunnel.\n\nVPN architecture components:\n- **Virtual Private Gateway (VGW)**: The AWS-side VPN endpoint attached to a single VPC. Supports up to 10 VPN connections\n- **Customer Gateway (CGW)**: Represents your on-premises VPN device. You provide the public IP and routing type (static or BGP)\n- **Transit Gateway VPN attachment**: Alternative to VGW — attach VPN directly to a Transit Gateway for multi-VPC access and ECMP support\n\nRouting options:\n- **Static routing**: You manually define which on-premises CIDR blocks are reachable. Simpler but no automatic failover\n- **Dynamic routing (BGP)**: Uses Border Gateway Protocol to exchange routes automatically. Enables failover detection and route preference via AS path and MED attributes\n\nPerformance characteristics:\n- Each tunnel supports up to 1.25 Gbps throughput\n- Latency varies because traffic traverses the public internet\n- For higher bandwidth, use multiple VPN connections with ECMP on Transit Gateway (up to 50 Gbps aggregate)\n- Accelerated Site-to-Site VPN uses Global Accelerator to route VPN traffic over the AWS backbone, reducing jitter and latency\n\nFor the SAP-C02 exam, VPN questions focus on hybrid architecture design, VPN as a backup for Direct Connect, BGP failover configuration, bandwidth limitations, and when to choose VPN vs. Direct Connect vs. both.",
+  "analogy": "A Site-to-Site VPN is like a secure armored car service that transports valuables (data) between your office (on-premises) and a bank vault (AWS) using public roads (internet). The cargo is locked in an encrypted container (IPsec tunnel) so even though it travels on public roads, no one can see or tamper with the contents. Two armored cars (dual tunnels) always run the same route — if one breaks down, the other continues the delivery without interruption.",
+  "diagram": "┌─── On-Premises Data Center ───┐         ┌─────── AWS Cloud ────────┐\n│                                │         │                           │\n│  ┌──────────────────────────┐ │         │  ┌─── VPC (10.0.0.0/16)──┐│\n│  │  Corporate Network       │ │         │  │                        ││\n│  │  192.168.0.0/16          │ │         │  │  ┌─ Private Subnet ──┐ ││\n│  │                          │ │         │  │  │  [App Servers]    │ ││\n│  │  ┌────────────────────┐  │ │         │  │  └───────────────────┘ ││\n│  │  │  Customer Gateway  │  │ │         │  │                        ││\n│  │  │  (VPN Device)      │  │ │         │  └────────────────────────┘│\n│  │  └─────────┬──────────┘  │ │         │              │             │\n│  └────────────┼─────────────┘ │         │  ┌───────────▼───────────┐│\n│               │                │         │  │  Virtual Private GW   ││\n└───────────────┼────────────────┘         │  │  (or Transit Gateway) ││\n                │                           │  └───────────┬───────────┘│\n                │                           └──────────────┼────────────┘\n                │         Public Internet                  │\n                │    ┌─────────────────────────┐          │\n                │    │                         │          │\n                ├────┤  Tunnel 1 (IPsec)  ─────┼──────────┤\n                │    │  AZ-a endpoint          │          │\n                │    │                         │          │\n                ├────┤  Tunnel 2 (IPsec)  ─────┼──────────┤\n                │    │  AZ-b endpoint          │          │\n                │    │                         │          │\n                │    │  (Redundant tunnels     │          │\n                │    │   for HA failover)      │          │\n                │    └─────────────────────────┘          │\n                │                                          │\n                └──────────────────────────────────────────┘",
   "keyPoints": [
-    "Uses IPsec protocol for encryption over the public internet",
-    "Each VPN connection has two tunnels for redundancy",
-    "Requires a Virtual Private Gateway (VGW) on the AWS side and a Customer Gateway on-premises",
-    "Bandwidth limited to approximately 1.25 Gbps per tunnel"
+    "Each Site-to-Site VPN connection provides two IPsec tunnels terminating in different AZs for automatic failover",
+    "Each tunnel supports up to 1.25 Gbps — use ECMP with Transit Gateway to aggregate multiple tunnels for higher bandwidth",
+    "Requires a Virtual Private Gateway (VPC-attached) or Transit Gateway attachment on the AWS side, and a Customer Gateway representing the on-premises device",
+    "Supports static routing (manual CIDR definitions) or dynamic routing via BGP (automatic route exchange and failover)",
+    "Accelerated Site-to-Site VPN routes traffic over the AWS global network via Global Accelerator, reducing internet-related jitter",
+    "VPN can serve as a cost-effective backup path for Direct Connect — BGP route preferences control failover behavior",
+    "Traffic traverses the public internet (encrypted) — latency is variable and not guaranteed, unlike Direct Connect"
   ],
   "examKeywords": [
     {
       "term": "Site-to-Site VPN",
       "type": "service-reference",
-      "definition": "An encrypted IPsec connection between an on-premises network and an AWS VPC, traversing the public internet with two redundant tunnels."
+      "definition": "An encrypted IPsec connection between an on-premises network and AWS (VPC or Transit Gateway), providing two redundant tunnels over the public internet."
+    },
+    {
+      "term": "Virtual Private Gateway",
+      "type": "service-reference",
+      "definition": "The AWS-side VPN endpoint attached to a single VPC. Supports up to 10 VPN connections and route propagation to VPC route tables."
+    },
+    {
+      "term": "Customer Gateway",
+      "type": "architecture-term",
+      "definition": "An AWS resource representing your on-premises VPN device. Configured with the device's public IP address and routing type (static or BGP)."
+    },
+    {
+      "term": "BGP",
+      "type": "exam-signal",
+      "definition": "Border Gateway Protocol — a dynamic routing protocol used with VPN and Direct Connect for automatic route exchange, failover detection, and path preference."
+    },
+    {
+      "term": "Accelerated VPN",
+      "type": "exam-signal",
+      "definition": "A Site-to-Site VPN option that routes encrypted traffic over the AWS global network (via Global Accelerator) instead of the public internet, reducing latency variability."
     }
   ],
   "commonMistakes": [
-    "Not configuring both tunnels for high availability",
-    "Choosing VPN over Direct Connect when consistent low-latency is required"
+    "Not configuring both VPN tunnels as active — if only one tunnel is used, failover requires manual intervention or BGP reconvergence",
+    "Choosing VPN over Direct Connect when consistent low-latency or high-bandwidth (>1.25 Gbps per tunnel) is required",
+    "Using static routing instead of BGP when automatic failover between VPN and Direct Connect is needed",
+    "Forgetting that VPN bandwidth is limited to 1.25 Gbps per tunnel — for higher throughput, use ECMP with Transit Gateway",
+    "Not considering Accelerated VPN when internet path quality causes unacceptable jitter for real-time workloads"
   ],
-  "relatedTopics": ["direct-connect", "transit-gateway", "what-is-vpc"]
+  "relatedTopics": ["direct-connect", "transit-gateway", "what-is-vpc", "route-tables"]
 }

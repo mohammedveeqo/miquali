@@ -4,26 +4,47 @@
   "sectionId": "networking",
   "clusterId": "cluster-2",
   "order": 4,
-  "explanation": "A NAT Gateway enables instances in private subnets to connect to the internet or other AWS services while preventing the internet from initiating connections to those instances. It is a managed, highly available service that operates within a single Availability Zone.",
-  "analogy": "A NAT Gateway is like a mail forwarding service for your private rooms — residents can send letters out, but no one outside can send unsolicited mail directly to them.",
-  "diagram": "/diagrams/nat-gateway-overview.svg",
+  "explanation": "A NAT (Network Address Translation) Gateway enables instances in private subnets to initiate outbound connections to the internet or other AWS services while preventing the internet from initiating inbound connections to those instances. It performs source NAT — replacing the private IP of the originating instance with the NAT Gateway's Elastic IP address.\n\nNAT Gateways are managed by AWS, meaning you do not need to patch, monitor, or scale them yourself. They automatically scale up to 100 Gbps of bandwidth. However, each NAT Gateway operates within a single Availability Zone. If that AZ fails, resources in other AZs that route through it lose internet access.\n\nKey architectural considerations:\n- **High availability**: Deploy one NAT Gateway per AZ and configure each private subnet's route table to use the NAT Gateway in the same AZ\n- **Elastic IP**: Each NAT Gateway requires exactly one Elastic IP address, which becomes the source IP for all outbound traffic\n- **Connection limits**: Supports up to 55,000 simultaneous connections to each unique destination (IP:port combination). Exceeding this causes port allocation errors\n- **Cost model**: Charged per hour (~$0.045/hr) plus per GB of data processed (~$0.045/GB). For high-throughput workloads, this cost can be significant\n\nFor the SAP-C02 exam, NAT Gateway questions often test high-availability design (one per AZ), cost optimization (replacing NAT Gateway with VPC endpoints for S3/DynamoDB), and troubleshooting connectivity issues (port exhaustion, route table misconfiguration).",
+  "analogy": "A NAT Gateway is like a corporate mail room. Employees (private instances) can send letters (requests) to the outside world, and the mail room stamps them with the company's return address (Elastic IP). Replies come back to the mail room, which routes them to the correct employee. But no one outside can send unsolicited mail directly to an employee — they can only reply to mail that was sent first.",
+  "diagram": "┌────────────────────────── VPC ──────────────────────────┐\n│                                                          │\n│  ┌─── AZ-a ───────────────┐  ┌─── AZ-b ───────────────┐│\n│  │                         │  │                         ││\n│  │  ┌─ Public Subnet ───┐ │  │  ┌─ Public Subnet ───┐ ││\n│  │  │  [NAT-GW-a + EIP] │ │  │  │  [NAT-GW-b + EIP] │ ││\n│  │  └────────┬───────────┘ │  │  └────────┬───────────┘ ││\n│  │           │             │  │           │             ││\n│  │  ┌─ Private Subnet ──┐ │  │  ┌─ Private Subnet ──┐ ││\n│  │  │  [App Server]     │ │  │  │  [App Server]     │ ││\n│  │  │  Route:            │ │  │  │  Route:            │ ││\n│  │  │  0.0.0.0/0→NAT-a  │ │  │  │  0.0.0.0/0→NAT-b  │ ││\n│  │  └────────────────────┘ │  │  └────────────────────┘ ││\n│  └─────────────────────────┘  └─────────────────────────┘│\n│                                                          │\n│  ┌─────────────────── IGW ───────────────────────┐      │\n│  └───────────────────────────────────────────────┘      │\n└──────────────────────────┬───────────────────────────────┘\n                           │\n                           ▼\n                     ┌───────────┐\n                     │  Internet │\n                     └───────────┘",
   "keyPoints": [
-    "NAT Gateway is AZ-scoped — deploy one per AZ for high availability",
-    "Supports up to 55,000 simultaneous connections to each unique destination",
-    "Charged per hour and per GB of data processed",
-    "Must be placed in a public subnet with an Elastic IP"
+    "NAT Gateway is AZ-scoped — deploy one per AZ for high availability to avoid cross-AZ single points of failure",
+    "Requires an Elastic IP address and must be placed in a public subnet with a route to an Internet Gateway",
+    "Supports up to 55,000 simultaneous connections per unique destination; exceeding this causes ErrorPortAllocation CloudWatch errors",
+    "Automatically scales bandwidth up to 100 Gbps — no manual intervention needed",
+    "Charged per hour (~$0.045/hr) and per GB processed (~$0.045/GB) — use VPC endpoints for S3/DynamoDB to reduce costs",
+    "Cannot be used by resources in the same subnet as the NAT Gateway — those resources use the IGW directly",
+    "NAT Gateway does not support security groups — use NACLs on the subnet for traffic filtering"
   ],
   "examKeywords": [
     {
       "term": "NAT Gateway",
       "type": "service-reference",
-      "definition": "A managed AWS service that enables outbound internet access for resources in private subnets while blocking inbound connections.",
+      "definition": "A managed, AZ-scoped service that enables outbound internet access for private subnet resources by performing source network address translation using an Elastic IP.",
       "svgDiagram": "/diagrams/mini/nat-icon.svg"
+    },
+    {
+      "term": "Elastic IP",
+      "type": "exam-signal",
+      "definition": "A static public IPv4 address that you can allocate and associate with a NAT Gateway or EC2 instance. Required for NAT Gateway operation."
+    },
+    {
+      "term": "port exhaustion",
+      "type": "architecture-term",
+      "definition": "A condition where a NAT Gateway exceeds 55,000 simultaneous connections to a single destination, causing new connections to fail with ErrorPortAllocation."
+    },
+    {
+      "term": "NAT instance",
+      "type": "exam-signal",
+      "definition": "A self-managed EC2 instance performing NAT. Legacy approach replaced by NAT Gateway for most use cases. Requires disabling source/destination checks."
     }
   ],
   "commonMistakes": [
-    "Deploying a single NAT Gateway for multi-AZ architectures — creates a single point of failure",
-    "Confusing NAT Gateway (managed) with NAT Instance (self-managed EC2)"
+    "Deploying a single NAT Gateway for a multi-AZ architecture — if that AZ fails, all private subnets in other AZs lose internet access",
+    "Confusing NAT Gateway (managed, auto-scaling, no security groups) with NAT Instance (self-managed EC2, manual scaling, supports security groups)",
+    "Routing S3 or DynamoDB traffic through NAT Gateway instead of using free Gateway VPC endpoints, incurring unnecessary data processing charges",
+    "Placing the NAT Gateway in a private subnet — it must be in a public subnet with a route to the IGW",
+    "Forgetting that NAT Gateway does not support IPv6 — use an Egress-Only Internet Gateway for IPv6 outbound traffic"
   ],
-  "relatedTopics": ["subnets", "internet-gateway", "route-tables"]
+  "relatedTopics": ["subnets", "internet-gateway", "route-tables", "vpc-endpoints"]
 }

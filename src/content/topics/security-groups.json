@@ -4,25 +4,46 @@
   "sectionId": "networking",
   "clusterId": "cluster-2",
   "order": 6,
-  "explanation": "Security groups act as virtual firewalls for your instances, controlling inbound and outbound traffic at the instance level. They are stateful — if you allow inbound traffic, the response is automatically allowed outbound.",
-  "analogy": "Security groups are like bouncers at a club — they check every person (packet) against the guest list (rules) before allowing entry or exit.",
-  "diagram": "/diagrams/security-groups-overview.svg",
+  "explanation": "Security groups act as virtual firewalls for your AWS resources, controlling inbound and outbound traffic at the Elastic Network Interface (ENI) level. They are **stateful** — if you allow an inbound request, the response traffic is automatically allowed regardless of outbound rules, and vice versa.\n\nSecurity groups operate on an allow-only model. You can specify rules that permit traffic, but you cannot create explicit deny rules. Any traffic not explicitly allowed is implicitly denied. This is a fundamental difference from Network ACLs, which support both allow and deny rules.\n\nKey characteristics:\n- **Stateful**: Return traffic is automatically allowed. If you allow inbound TCP/443, the response flows out without needing an outbound rule for that connection\n- **ENI-level**: Security groups attach to network interfaces, not subnets. Multiple instances in the same subnet can have different security groups\n- **Self-referencing**: A security group can reference itself or other security groups as a source/destination, enabling dynamic rules that adapt as instances scale\n- **Multiple groups**: Up to 5 security groups can be assigned to a single ENI (configurable up to 16). Rules from all groups are aggregated\n- **Default behavior**: New security groups allow all outbound traffic and deny all inbound traffic\n\nFor the SAP-C02 exam, security groups are tested in layered security designs (defense in depth with NACLs), self-referencing patterns for auto-scaling groups, and cross-VPC security group references in peered VPCs. Understanding the stateful nature and how it differs from NACLs is a frequent exam topic.",
+  "analogy": "Security groups are like a VIP guest list at a private event. The bouncer (security group) checks if you are on the list (allow rule) before letting you in. Once you are inside, you can leave freely (stateful — return traffic allowed). If you are not on the list, you are turned away (implicit deny). The bouncer never has a 'banned' list — they only have an 'allowed' list. And each room (ENI) can have its own bouncer with a different guest list.",
+  "diagram": "┌────────────────────── Subnet ──────────────────────┐\n│                                                     │\n│  ┌─── EC2 Instance A ────────────────────────────┐ │\n│  │  ENI: sg-web (inbound: TCP/443 from 0.0.0.0/0)│ │\n│  │                                                │ │\n│  │  Inbound Rules:                                │ │\n│  │  ┌──────────┬──────────┬───────────────────┐  │ │\n│  │  │ Protocol │ Port     │ Source            │  │ │\n│  │  ├──────────┼──────────┼───────────────────┤  │ │\n│  │  │ TCP      │ 443      │ 0.0.0.0/0        │  │ │\n│  │  │ TCP      │ 22       │ 10.0.0.0/16      │  │ │\n│  │  └──────────┴──────────┴───────────────────┘  │ │\n│  │                                                │ │\n│  │  Outbound: All traffic allowed (default)       │ │\n│  └────────────────────────────────────────────────┘ │\n│                         │                           │\n│                         ▼ (stateful: response auto) │\n│  ┌─── EC2 Instance B ────────────────────────────┐ │\n│  │  ENI: sg-app (inbound: TCP/8080 from sg-web)  │ │\n│  │                                                │ │\n│  │  Source = sg-web (self-referencing pattern)    │ │\n│  │  ► Any instance in sg-web can reach port 8080 │ │\n│  └────────────────────────────────────────────────┘ │\n│                                                     │\n└─────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Security groups are stateful — return traffic is automatically allowed",
-    "Default: all inbound denied, all outbound allowed",
-    "You can only specify allow rules, not deny rules",
-    "Security groups are associated with ENIs (network interfaces)"
+    "Security groups are stateful — return traffic for an allowed connection is automatically permitted without explicit rules",
+    "Only allow rules are supported; there are no deny rules. Traffic not matching any allow rule is implicitly denied",
+    "Security groups operate at the ENI (network interface) level, not the subnet level — different instances in the same subnet can have different groups",
+    "A security group can reference another security group as a source or destination, enabling dynamic scaling without IP-based rules",
+    "Up to 5 security groups per ENI by default (increasable to 16), with rules aggregated across all attached groups",
+    "Changes to security group rules take effect immediately — no need to restart instances or connections",
+    "Default security group allows all inbound from itself and all outbound; custom security groups deny all inbound and allow all outbound"
   ],
   "examKeywords": [
     {
       "term": "security group",
       "type": "architecture-term",
-      "definition": "A stateful virtual firewall controlling inbound and outbound traffic at the instance (ENI) level. Supports allow rules only."
+      "definition": "A stateful virtual firewall at the ENI level that uses allow-only rules to control inbound and outbound traffic. Return traffic is automatically permitted."
+    },
+    {
+      "term": "stateful firewall",
+      "type": "exam-signal",
+      "definition": "A firewall that tracks connection state. If inbound traffic is allowed, the corresponding outbound response is automatically allowed without a separate rule."
+    },
+    {
+      "term": "self-referencing security group",
+      "type": "architecture-term",
+      "definition": "A security group rule that references itself or another security group as the source, allowing all members of that group to communicate — ideal for auto-scaling."
+    },
+    {
+      "term": "ENI",
+      "type": "exam-signal",
+      "definition": "Elastic Network Interface — a virtual network card attached to an instance. Security groups are applied at the ENI level, not the instance or subnet level."
     }
   ],
   "commonMistakes": [
-    "Confusing security groups (stateful, instance-level) with NACLs (stateless, subnet-level)",
-    "Not understanding that security groups can reference other security groups as sources"
+    "Confusing security groups (stateful, ENI-level, allow-only) with NACLs (stateless, subnet-level, allow and deny)",
+    "Not using security group references as sources — hardcoding IP addresses breaks when instances scale or are replaced",
+    "Assuming the default security group is empty — it actually allows all inbound traffic from other instances in the same security group",
+    "Forgetting that security groups are VPC-scoped — you cannot reference a security group from another VPC unless using VPC peering with the same Region",
+    "Opening 0.0.0.0/0 on SSH (port 22) or RDP (port 3389) — this is a critical security anti-pattern flagged by AWS Config and Security Hub"
   ],
-  "relatedTopics": ["network-acls", "subnets", "what-is-vpc"]
+  "relatedTopics": ["network-acls", "subnets", "what-is-vpc", "elastic-load-balancing"]
 }

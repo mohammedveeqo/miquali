@@ -4,25 +4,46 @@
   "sectionId": "networking",
   "clusterId": "cluster-6",
   "order": 18,
-  "explanation": "AWS Network Firewall is a managed stateful firewall service for VPCs. It provides fine-grained control over network traffic with support for intrusion prevention (IPS), stateful inspection, and custom rule groups.",
-  "analogy": "Network Firewall is like a sophisticated security checkpoint with X-ray machines — it inspects the contents of every package (packet) passing through, not just the address label.",
-  "diagram": "/diagrams/network-firewall-overview.svg",
+  "explanation": "AWS Network Firewall is a managed, stateful network firewall and intrusion prevention service (IPS) for VPCs. It provides fine-grained control over network traffic with deep packet inspection capabilities, going far beyond what security groups and NACLs can offer.\n\nNetwork Firewall operates in a dedicated **firewall subnet** and inspects traffic as it passes through. Traffic is routed to the firewall using VPC route tables (typically via a Gateway Load Balancer endpoint that AWS manages internally). The firewall evaluates traffic against rule groups and takes actions (allow, drop, alert).\n\nRule types:\n- **Stateless rules**: Evaluated first, process each packet independently (like NACLs). Can pass, drop, or forward to stateful rules\n- **Stateful rules**: Track connection state and support deep packet inspection. Three formats:\n  - 5-tuple rules: Source/dest IP, port, protocol with action\n  - Domain list rules: Allow/deny traffic to specific domain names (e.g., block all except *.amazonaws.com)\n  - Suricata-compatible IPS rules: Full intrusion detection/prevention using the open-source Suricata rule language\n\nDeployment architecture:\n- Firewall is deployed in a dedicated subnet (one per AZ)\n- Internet-bound traffic is routed: Instance → Firewall subnet → NAT Gateway → IGW\n- Ingress traffic: IGW → Firewall subnet → Application subnet\n- Uses Gateway route tables on the IGW to intercept incoming traffic\n\nFor the SAP-C02 exam, Network Firewall questions test centralized inspection architectures (with Transit Gateway), domain-based filtering for egress control, IPS/IDS requirements, and integration with AWS Firewall Manager for multi-account governance.",
+  "analogy": "Network Firewall is like an advanced airport security checkpoint with X-ray machines and behavioral analysis. Security groups are the boarding pass check (basic allow/deny at the gate), NACLs are the terminal entrance check (checks everyone entering/leaving). But Network Firewall is the full security screening — it opens your bags (deep packet inspection), checks for prohibited items (IPS signatures), and can even read the labels on your packages (domain filtering) to decide if you can proceed.",
+  "diagram": "┌────────────── Network Firewall Deployment ──────────────────────┐\n│                                                                   │\n│  ┌─── VPC ────────────────────────────────────────────────────┐  │\n│  │                                                             │  │\n│  │  Internet                                                   │  │\n│  │     │                                                       │  │\n│  │     ▼                                                       │  │\n│  │  ┌─ IGW ─┐  (Gateway route table routes to firewall)       │  │\n│  │  └───┬───┘                                                  │  │\n│  │      │                                                      │  │\n│  │      ▼                                                      │  │\n│  │  ┌─ Firewall Subnet ──────────────────────────────────┐    │  │\n│  │  │                                                     │    │  │\n│  │  │  ┌──────────────────────────────────────────────┐  │    │  │\n│  │  │  │  AWS Network Firewall                        │  │    │  │\n│  │  │  │                                              │  │    │  │\n│  │  │  │  Rule Groups:                                │  │    │  │\n│  │  │  │  ┌─ Stateless ─────────────────────────┐    │  │    │  │\n│  │  │  │  │ Drop known-bad IPs (threat intel)    │    │  │    │  │\n│  │  │  │  │ Pass all other → stateful engine     │    │  │    │  │\n│  │  │  │  └─────────────────────────────────────┘    │  │    │  │\n│  │  │  │  ┌─ Stateful ──────────────────────────┐    │  │    │  │\n│  │  │  │  │ Allow: *.amazonaws.com               │    │  │    │  │\n│  │  │  │  │ Allow: github.com                    │    │  │    │  │\n│  │  │  │  │ Deny:  all other domains             │    │  │    │  │\n│  │  │  │  │ IPS:   Suricata rules (CVE sigs)     │    │  │    │  │\n│  │  │  │  └─────────────────────────────────────┘    │  │    │  │\n│  │  │  └──────────────────────────────────────────────┘  │    │  │\n│  │  └─────────────────────────┬───────────────────────────┘    │  │\n│  │                            │                                │  │\n│  │                            ▼                                │  │\n│  │  ┌─ Public Subnet ────────────────────┐                    │  │\n│  │  │  [NAT Gateway]                      │                    │  │\n│  │  └────────────────────────────────────┘                    │  │\n│  │                            │                                │  │\n│  │                            ▼                                │  │\n│  │  ┌─ Private Subnet ───────────────────┐                    │  │\n│  │  │  [Application Servers]              │                    │  │\n│  │  └────────────────────────────────────┘                    │  │\n│  │                                                             │  │\n│  └─────────────────────────────────────────────────────────────┘  │\n│                                                                   │\n│  Traffic flow: App → Firewall → NAT → IGW → Internet            │\n│  Return flow:  Internet → IGW → Firewall → App                  │\n└───────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Managed service — AWS handles scaling, patching, and availability",
-    "Supports stateful rules, stateless rules, and Suricata-compatible IPS rules",
-    "Deployed in a dedicated firewall subnet with routing through Gateway Load Balancer endpoints",
-    "Integrates with AWS Firewall Manager for multi-account governance"
+    "Managed stateful firewall with deep packet inspection, IPS/IDS, and domain-based filtering — far beyond security groups and NACLs",
+    "Supports Suricata-compatible IPS rules for detecting and blocking known attack signatures and CVE exploits",
+    "Domain list rules enable egress filtering — allow traffic only to approved domains (e.g., *.amazonaws.com) and block everything else",
+    "Deployed in a dedicated firewall subnet with traffic routed through it via VPC route tables and gateway route tables",
+    "Integrates with AWS Firewall Manager for centralized rule management across multiple accounts in an AWS Organization",
+    "Stateless rules are evaluated first (fast path for known-good/known-bad traffic), then remaining traffic passes to the stateful engine",
+    "Logs can be sent to S3, CloudWatch Logs, or Kinesis Data Firehose for analysis and alerting"
   ],
   "examKeywords": [
     {
       "term": "Network Firewall",
       "type": "service-reference",
-      "definition": "A managed stateful network firewall and IPS service for VPCs, supporting deep packet inspection and Suricata-compatible rules."
+      "definition": "A managed stateful network firewall and IPS for VPCs supporting deep packet inspection, domain filtering, and Suricata-compatible intrusion prevention rules."
+    },
+    {
+      "term": "Suricata rules",
+      "type": "exam-signal",
+      "definition": "An open-source IPS rule format supported by AWS Network Firewall for detecting and blocking network-based attacks using signature matching."
+    },
+    {
+      "term": "domain list filtering",
+      "type": "architecture-term",
+      "definition": "A Network Firewall capability that allows or denies traffic based on the destination domain name (SNI/Host header), enabling egress control without IP-based rules."
+    },
+    {
+      "term": "Firewall Manager",
+      "type": "service-reference",
+      "definition": "AWS service for centrally managing firewall rules (Network Firewall, WAF, security groups) across multiple accounts in an AWS Organization."
     }
   ],
   "commonMistakes": [
-    "Deploying Network Firewall without a dedicated firewall subnet",
-    "Confusing Network Firewall (Layer 3-7 inspection) with security groups (Layer 4 only)"
+    "Deploying Network Firewall without a dedicated firewall subnet — it must be in its own subnet with specific routing to intercept traffic",
+    "Confusing Network Firewall (Layer 3-7 deep packet inspection, IPS, domain filtering) with security groups (Layer 4 allow-only rules) or NACLs (Layer 4 stateless rules)",
+    "Not configuring gateway route tables on the IGW — without them, inbound traffic bypasses the firewall entirely",
+    "Using Network Firewall for simple port-based filtering that security groups can handle — it adds cost and latency for basic use cases",
+    "Forgetting to enable logging — without logs, you cannot detect blocked threats or troubleshoot connectivity issues caused by firewall rules"
   ],
-  "relatedTopics": ["network-acls", "security-groups", "vpc-endpoints"]
+  "relatedTopics": ["network-acls", "security-groups", "vpc-endpoints", "transit-gateway"]
 }

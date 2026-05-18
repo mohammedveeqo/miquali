@@ -4,25 +4,46 @@
   "sectionId": "networking",
   "clusterId": "cluster-3",
   "order": 7,
-  "explanation": "Network Access Control Lists (NACLs) are stateless firewalls that operate at the subnet level. They evaluate rules in order (by rule number) and apply to all traffic entering or leaving the subnet.",
-  "analogy": "NACLs are like a security checkpoint at the entrance to a neighborhood — every vehicle (packet) is checked both entering and leaving, regardless of whether it was already checked before.",
-  "diagram": "/diagrams/network-acls-overview.svg",
+  "explanation": "Network Access Control Lists (NACLs) are **stateless** firewalls that operate at the subnet level. They evaluate traffic rules in numerical order (by rule number) and apply to all traffic entering or leaving the subnet, regardless of which instances or ENIs are involved.\n\nBecause NACLs are stateless, you must explicitly configure both inbound and outbound rules. If you allow inbound HTTP traffic on port 80, you must also allow outbound traffic on the ephemeral port range (1024-65535) for the response to flow back. This is the key operational difference from security groups.\n\nRule evaluation:\n- Rules are processed in order from lowest rule number to highest\n- The first rule that matches the traffic is applied (allow or deny)\n- If no rule matches, the default rule (*) denies the traffic\n- Best practice: number rules in increments of 10 or 100 to allow inserting rules later\n\nNACL architecture:\n- **Subnet-scoped**: One NACL per subnet; all traffic in/out of the subnet is evaluated\n- **Allow and deny**: Unlike security groups, NACLs support explicit deny rules — useful for blocking specific IP ranges\n- **Default NACL**: Created with the VPC, allows all inbound and outbound traffic. Custom NACLs deny all by default\n- **Rule limit**: 20 inbound and 20 outbound rules per NACL (increasable to 40)\n\nFor the SAP-C02 exam, NACLs appear in defense-in-depth questions (layered with security groups), blocking specific IP addresses or CIDR ranges, and troubleshooting scenarios where stateless behavior causes connectivity issues (forgotten ephemeral port rules).",
+  "analogy": "NACLs are like a security checkpoint at the entrance and exit of a gated neighborhood. Every vehicle (packet) is inspected both when entering and when leaving — the guards do not remember who they already checked (stateless). The guards have a numbered checklist: they go down the list in order and apply the first matching rule. If the checklist says 'deny red cars at rule 50' and 'allow all cars at rule 100,' red cars are blocked because rule 50 is checked first.",
+  "diagram": "┌────────────────────── VPC ──────────────────────────┐\n│                                                      │\n│  ┌─── NACL (Subnet Boundary) ─────────────────────┐ │\n│  │                                                  │ │\n│  │  INBOUND RULES:                                  │ │\n│  │  ┌──────┬──────────┬───────┬────────┬─────────┐ │ │\n│  │  │ Rule │ Protocol │ Port  │ Source │ Action  │ │ │\n│  │  ├──────┼──────────┼───────┼────────┼─────────┤ │ │\n│  │  │ 100  │ TCP      │ 443   │ 0.0.0/0│ ALLOW   │ │ │\n│  │  │ 200  │ TCP      │ 80    │ 0.0.0/0│ ALLOW   │ │ │\n│  │  │ 300  │ TCP      │ 22    │ Corp IP│ ALLOW   │ │ │\n│  │  │  *   │ All      │ All   │ 0.0.0/0│ DENY    │ │ │\n│  │  └──────┴──────────┴───────┴────────┴─────────┘ │ │\n│  │                                                  │ │\n│  │  OUTBOUND RULES:                                 │ │\n│  │  ┌──────┬──────────┬───────────┬────────┬──────┐│ │\n│  │  │ Rule │ Protocol │ Port      │ Dest   │Action││ │\n│  │  ├──────┼──────────┼───────────┼────────┼──────┤│ │\n│  │  │ 100  │ TCP      │ 1024-65535│ 0.0.0/0│ALLOW ││ │\n│  │  │  *   │ All      │ All       │ 0.0.0/0│DENY  ││ │\n│  │  └──────┴──────────┴───────────┴────────┴──────┘│ │\n│  │                                                  │ │\n│  │  ◄── Stateless: both directions checked ──►     │ │\n│  │                                                  │ │\n│  │  ┌────────────────────────────────────────────┐ │ │\n│  │  │           Subnet Resources                  │ │ │\n│  │  │  [EC2]  [RDS]  [Lambda ENI]                │ │ │\n│  │  └────────────────────────────────────────────┘ │ │\n│  └──────────────────────────────────────────────────┘ │\n│                                                      │\n└──────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "NACLs are stateless — inbound and outbound rules are evaluated independently",
-    "Rules are evaluated in order by rule number (lowest first)",
-    "NACLs support both allow and deny rules",
-    "Each subnet is associated with exactly one NACL"
+    "NACLs are stateless — you must explicitly allow return traffic (ephemeral ports 1024-65535) in outbound rules for inbound connections",
+    "Rules are evaluated in numerical order (lowest first); the first matching rule is applied and evaluation stops",
+    "NACLs support both ALLOW and DENY rules — the only VPC firewall that can explicitly block specific IPs or CIDR ranges",
+    "Each subnet is associated with exactly one NACL; one NACL can be associated with multiple subnets",
+    "The default NACL (created with VPC) allows all traffic; custom NACLs deny all traffic by default",
+    "Rule limit is 20 inbound + 20 outbound per NACL (increasable to 40 each via quota request)",
+    "NACLs apply to all traffic crossing the subnet boundary — even traffic between instances in different subnets within the same VPC"
   ],
   "examKeywords": [
     {
       "term": "Network ACL",
       "type": "architecture-term",
-      "definition": "A stateless firewall at the subnet level that evaluates numbered rules in order for both inbound and outbound traffic."
+      "definition": "A stateless, subnet-level firewall that evaluates numbered rules in order for both inbound and outbound traffic, supporting both allow and deny actions."
+    },
+    {
+      "term": "stateless firewall",
+      "type": "exam-signal",
+      "definition": "A firewall that does not track connection state. Each packet is evaluated independently — inbound and outbound rules are applied separately."
+    },
+    {
+      "term": "ephemeral ports",
+      "type": "exam-signal",
+      "definition": "Temporary ports (1024-65535) used by clients for return traffic. Must be explicitly allowed in NACL outbound rules for inbound connections to work."
+    },
+    {
+      "term": "defense in depth",
+      "type": "architecture-term",
+      "definition": "A security strategy using multiple layers of controls (NACLs at subnet level + security groups at ENI level) so that if one layer fails, another provides protection."
     }
   ],
   "commonMistakes": [
-    "Forgetting NACLs are stateless — you must explicitly allow return traffic",
-    "Not understanding rule evaluation order — lower numbers are evaluated first"
+    "Forgetting NACLs are stateless — allowing inbound port 443 without allowing outbound ephemeral ports (1024-65535) breaks HTTPS responses",
+    "Not understanding rule evaluation order — a DENY at rule 50 takes effect before an ALLOW at rule 100 for the same traffic",
+    "Modifying the default NACL to deny traffic without realizing it affects all subnets not explicitly associated with a custom NACL",
+    "Using NACLs as the primary firewall instead of security groups — NACLs are best for broad subnet-level blocking, while security groups handle instance-level access",
+    "Numbering rules without gaps (1, 2, 3...) making it impossible to insert new rules between existing ones — use increments of 10 or 100"
   ],
-  "relatedTopics": ["security-groups", "subnets", "what-is-vpc"]
+  "relatedTopics": ["security-groups", "subnets", "what-is-vpc", "network-firewall"]
 }

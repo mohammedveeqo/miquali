@@ -4,26 +4,47 @@
   "sectionId": "networking",
   "clusterId": "cluster-5",
   "order": 14,
-  "explanation": "Amazon Route 53 is a highly available and scalable DNS web service. It performs three main functions: domain registration, DNS routing, and health checking. It supports multiple routing policies for traffic management.",
-  "analogy": "Route 53 is like the phone book of the internet — when someone dials a name (domain), it looks up the correct number (IP address) and connects the call.",
-  "diagram": "/diagrams/route-53-overview.svg",
+  "explanation": "Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service that performs three main functions: domain registration, DNS routing, and health checking. It is the only AWS service with a 100% availability SLA.\n\nRoute 53 supports multiple **routing policies** that determine how DNS queries are answered:\n- **Simple**: Returns a single resource (or multiple values chosen randomly by the client)\n- **Weighted**: Distributes traffic by percentage across multiple resources (e.g., 70/30 split for canary deployments)\n- **Latency-based**: Routes users to the Region with lowest network latency from their location\n- **Failover**: Active-passive configuration — routes to a standby resource when the primary fails health checks\n- **Geolocation**: Routes based on the geographic location of the user (continent, country, or US state) — useful for compliance and localization\n- **Geoproximity**: Routes based on geographic distance with adjustable bias to shift traffic between resources\n- **Multi-value answer**: Returns up to 8 healthy records randomly — a simple form of load balancing with health checks\n\n**Alias records** are a Route 53-specific extension that map a DNS name directly to an AWS resource (ELB, CloudFront, S3 website, etc.). Unlike CNAME records, alias records work at the zone apex (naked domain) and incur no charge for queries to AWS resources.\n\n**Health checks** monitor endpoint availability and trigger DNS failover. They can check HTTP/HTTPS/TCP endpoints, CloudWatch alarms, or other health checks (calculated health checks).\n\nFor the SAP-C02 exam, Route 53 questions test routing policy selection for specific scenarios, alias vs. CNAME behavior, multi-Region failover architectures, and private hosted zones for VPC-internal DNS.",
+  "analogy": "Route 53 is like an intelligent phone directory operator. When someone asks for a number (IP address) by name (domain), the operator does not just look it up — they consider factors like where the caller is located (geolocation), which office is closest (latency), whether the main office is open (health checks), and how to split calls between offices (weighted). If the main office is closed, the operator automatically redirects to the backup (failover).",
+  "diagram": "┌────────────────── Route 53 Routing Policies ──────────────────┐\n│                                                                 │\n│  User DNS Query: app.example.com                                │\n│         │                                                       │\n│         ▼                                                       │\n│  ┌─── Route 53 ───────────────────────────────────────────┐    │\n│  │                                                         │    │\n│  │  ┌─ Weighted ──────┐  ┌─ Latency ─────────────────┐   │    │\n│  │  │ 70% → us-east-1 │  │ US user → us-east-1 (20ms)│   │    │\n│  │  │ 30% → eu-west-1 │  │ EU user → eu-west-1 (15ms)│   │    │\n│  │  └─────────────────┘  └────────────────────────────┘   │    │\n│  │                                                         │    │\n│  │  ┌─ Failover ──────────────────────────────────────┐   │    │\n│  │  │ Primary: ALB us-east-1 (health check: healthy)  │   │    │\n│  │  │ Secondary: S3 static site (if primary fails)    │   │    │\n│  │  └─────────────────────────────────────────────────┘   │    │\n│  │                                                         │    │\n│  │  ┌─ Geolocation ──────────────────────────────────┐   │    │\n│  │  │ EU users → eu-west-1 (GDPR compliance)         │   │    │\n│  │  │ US users → us-east-1                           │   │    │\n│  │  │ Default  → us-east-1 (catch-all)               │   │    │\n│  │  └─────────────────────────────────────────────────┘   │    │\n│  └─────────────────────────────────────────────────────────┘    │\n│                                                                 │\n│  ┌─── Alias Records ──────────────────────────────────────┐    │\n│  │                                                         │    │\n│  │  example.com (zone apex) → ALIAS → ALB/CloudFront/S3  │    │\n│  │  ► Works at zone apex (CNAME cannot)                   │    │\n│  │  ► Free queries to AWS resources                       │    │\n│  │  ► Automatically returns target's IP                   │    │\n│  └─────────────────────────────────────────────────────────┘    │\n│                                                                 │\n│  ┌─── Health Checks ─────────────────────────────────────┐    │\n│  │  HTTP/HTTPS/TCP endpoint monitoring                    │    │\n│  │  Threshold: 3 consecutive failures → unhealthy         │    │\n│  │  Triggers: DNS failover, CloudWatch alarm              │    │\n│  └────────────────────────────────────────────────────────┘    │\n└─────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Supports routing policies: simple, weighted, latency-based, failover, geolocation, multi-value, and geoproximity",
-    "100% availability SLA for DNS queries",
-    "Health checks can monitor endpoints and trigger DNS failover",
-    "Alias records map to AWS resources without additional charges for queries"
+    "Only AWS service with a 100% availability SLA — designed for zero-downtime DNS resolution",
+    "Seven routing policies: simple, weighted, latency, failover, geolocation, geoproximity, and multi-value answer",
+    "Alias records map directly to AWS resources (ELB, CloudFront, S3, API Gateway) — free queries, work at zone apex, unlike CNAME",
+    "Health checks monitor endpoints and trigger automatic DNS failover when resources become unhealthy",
+    "Private hosted zones provide DNS resolution within VPCs without exposing records to the public internet",
+    "Geolocation routing is for compliance/localization (routes by user location); latency routing is for performance (routes by lowest latency)",
+    "Supports DNSSEC signing for domain validation and protection against DNS spoofing"
   ],
   "examKeywords": [
     {
       "term": "Route 53",
       "type": "service-reference",
-      "definition": "AWS managed DNS service providing domain registration, DNS routing with multiple policies, and health checking with 100% availability SLA.",
+      "definition": "AWS managed DNS service providing domain registration, multiple routing policies, health checking, and 100% availability SLA for DNS queries.",
       "svgDiagram": "/diagrams/mini/r53-icon.svg"
+    },
+    {
+      "term": "alias record",
+      "type": "exam-signal",
+      "definition": "A Route 53-specific DNS record that maps directly to AWS resources. Works at zone apex (naked domain), free for AWS resource queries, and auto-updates when target IPs change."
+    },
+    {
+      "term": "failover routing",
+      "type": "architecture-term",
+      "definition": "A Route 53 routing policy that directs traffic to a standby resource when the primary resource fails health checks — enables active-passive disaster recovery."
+    },
+    {
+      "term": "private hosted zone",
+      "type": "architecture-term",
+      "definition": "A Route 53 hosted zone that resolves DNS queries only within associated VPCs, keeping internal service names private from the public internet."
     }
   ],
   "commonMistakes": [
-    "Not using alias records for AWS resources — they are free and resolve faster",
-    "Confusing latency-based routing (performance) with geolocation routing (compliance/localization)"
+    "Not using alias records for AWS resources — CNAME records cannot be used at the zone apex and incur per-query charges",
+    "Confusing latency-based routing (performance optimization) with geolocation routing (compliance/localization) — they solve different problems",
+    "Forgetting to create a default record for geolocation routing — users not matching any location rule receive no response",
+    "Not associating private hosted zones with all VPCs that need resolution — unassociated VPCs cannot resolve private DNS names",
+    "Setting health check intervals too aggressively — fast checks (10s) cost more and may trigger false positives during brief network blips"
   ],
-  "relatedTopics": ["elastic-load-balancing", "cloudfront", "global-accelerator"]
+  "relatedTopics": ["elastic-load-balancing", "cloudfront", "global-accelerator", "what-is-vpc"]
 }

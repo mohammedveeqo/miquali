@@ -4,26 +4,52 @@
   "sectionId": "networking",
   "clusterId": "cluster-3",
   "order": 9,
-  "explanation": "AWS Transit Gateway is a network transit hub that connects VPCs and on-premises networks through a central hub. It simplifies network architecture by eliminating complex peering relationships.",
-  "analogy": "A Transit Gateway is like a central airport hub — instead of direct flights between every city pair, all routes go through the hub, simplifying connections dramatically.",
-  "diagram": "/diagrams/transit-gateway-overview.svg",
+  "explanation": "AWS Transit Gateway (TGW) is a regional network transit hub that connects multiple VPCs, VPN connections, Direct Connect gateways, and other Transit Gateways through a single central point. It eliminates the complexity of maintaining full-mesh peering connections by providing a hub-and-spoke model with **transitive routing** — any attached network can communicate with any other attached network through the TGW.\n\nTransit Gateway solves the scaling problem of VPC peering. Instead of n(n-1)/2 peering connections for n VPCs, you create n attachments to a single Transit Gateway. Each attachment connects a VPC, VPN, or Direct Connect gateway to the TGW.\n\nKey architectural features:\n- **Route tables**: TGW has its own route tables that control traffic flow between attachments. You can create multiple route tables for network segmentation (e.g., isolating production from development)\n- **Attachments**: Each VPC, VPN, or Direct Connect connection is an attachment. VPC attachments require a subnet in each AZ where you want connectivity\n- **Inter-Region peering**: Transit Gateways in different Regions can peer with each other, enabling global network architectures\n- **Multicast**: TGW supports multicast routing — the only AWS networking service that does\n- **Bandwidth**: Each VPC attachment supports up to 50 Gbps burst. VPN attachments support up to 1.25 Gbps per tunnel (ECMP can aggregate multiple tunnels)\n- **Sharing**: TGW can be shared across accounts using AWS Resource Access Manager (RAM)\n\nFor the SAP-C02 exam, Transit Gateway is heavily tested in multi-account architectures, hybrid connectivity (VPN + Direct Connect), network segmentation using multiple TGW route tables, and migration scenarios from full-mesh peering to hub-and-spoke.",
+  "analogy": "A Transit Gateway is like a central airport hub. Instead of building direct flights (peering connections) between every city pair, all routes go through the hub airport. Any city (VPC) connected to the hub can reach any other city connected to the same hub — that is transitive routing. You can also set up different terminals (route tables) to control which airlines (VPCs) can access which destinations, providing network segmentation.",
+  "diagram": "┌──────────────── Transit Gateway (Hub-and-Spoke) ────────────────┐\n│                                                                   │\n│                    ┌──────────────────┐                           │\n│                    │  Transit Gateway │                           │\n│                    │                  │                           │\n│                    │  Route Table A:  │                           │\n│                    │  10.0.0.0/16→VPC-A│                           │\n│                    │  10.1.0.0/16→VPC-B│                           │\n│                    │  10.2.0.0/16→VPC-C│                           │\n│                    │  192.168.0.0/16→VPN│                           │\n│                    └──┬───┬───┬───┬──┘                           │\n│                       │   │   │   │                               │\n│            ┌──────────┘   │   │   └──────────┐                   │\n│            │              │   │              │                   │\n│            ▼              ▼   ▼              ▼                   │\n│  ┌─── VPC-A ───┐  ┌─ VPC-B ─┐ ┌─ VPC-C ─┐  ┌─── On-Prem ───┐ │\n│  │ 10.0.0.0/16 │  │10.1.0.0 │ │10.2.0.0 │  │ 192.168.0.0/16│ │\n│  │ (Shared Svc)│  │  /16    │ │  /16    │  │               │ │\n│  └─────────────┘  └─────────┘ └─────────┘  └───────┬───────┘ │\n│                                                      │         │\n│  All VPCs can reach each other AND on-premises      VPN/DX     │\n│  through the Transit Gateway (transitive routing)    │         │\n│                                                      │         │\n├──────────────── Network Segmentation ────────────────┼─────────┤\n│                                                      │         │\n│  TGW Route Table: Prod    TGW Route Table: Dev       │         │\n│  ┌─────────────────┐      ┌─────────────────┐       │         │\n│  │ VPC-Prod-A      │      │ VPC-Dev-A       │       │         │\n│  │ VPC-Prod-B      │      │ VPC-Dev-B       │       │         │\n│  │ Shared Services │      │ Shared Services │       │         │\n│  │ (NO Dev access) │      │ (NO Prod access)│       │         │\n│  └─────────────────┘      └─────────────────┘       │         │\n│                                                      │         │\n└──────────────────────────────────────────────────────┴─────────┘",
   "keyPoints": [
-    "Acts as a regional hub connecting multiple VPCs and on-premises networks",
-    "Supports transitive routing — unlike VPC peering",
-    "Can peer with Transit Gateways in other Regions (inter-Region peering)",
-    "Supports route tables for fine-grained routing control"
+    "Transit Gateway provides transitive routing — any attached network can communicate with any other, unlike non-transitive VPC peering",
+    "Region-scoped service: use inter-Region TGW peering to connect Transit Gateways across Regions for global architectures",
+    "Supports multiple route tables for network segmentation — isolate production, development, and shared services",
+    "VPC attachments require a subnet in each AZ where connectivity is needed; the TGW places an ENI in each specified subnet",
+    "Can be shared across AWS accounts using Resource Access Manager (RAM) — essential for multi-account landing zone designs",
+    "Supports ECMP (Equal-Cost Multi-Path) over multiple VPN tunnels for aggregated bandwidth beyond 1.25 Gbps",
+    "Each VPC attachment supports up to 50 Gbps burst bandwidth; supports up to 5,000 attachments per TGW"
   ],
   "examKeywords": [
     {
       "term": "Transit Gateway",
       "type": "service-reference",
-      "definition": "A regional network transit hub that connects multiple VPCs and on-premises networks through a central point, supporting transitive routing.",
+      "definition": "A regional network transit hub connecting multiple VPCs, VPNs, and Direct Connect gateways through a central point with transitive routing and route table-based segmentation.",
       "svgDiagram": "/diagrams/mini/tgw-icon.svg"
+    },
+    {
+      "term": "transitive routing",
+      "type": "exam-signal",
+      "definition": "The ability for any network attached to a Transit Gateway to communicate with any other attached network through the hub, without requiring direct connections between each pair."
+    },
+    {
+      "term": "TGW route table",
+      "type": "architecture-term",
+      "definition": "A routing table within Transit Gateway that controls which attachments can communicate. Multiple route tables enable network segmentation and isolation."
+    },
+    {
+      "term": "ECMP",
+      "type": "exam-signal",
+      "definition": "Equal-Cost Multi-Path routing — distributes traffic across multiple VPN tunnels attached to a Transit Gateway, aggregating bandwidth beyond a single tunnel's 1.25 Gbps limit."
+    },
+    {
+      "term": "Resource Access Manager",
+      "type": "service-reference",
+      "definition": "AWS RAM enables sharing Transit Gateways (and other resources) across AWS accounts within an Organization, enabling centralized network management."
     }
   ],
   "commonMistakes": [
-    "Using VPC peering for many-to-many connectivity instead of Transit Gateway",
-    "Not understanding that Transit Gateway is Region-scoped — use inter-Region peering for cross-Region"
+    "Using full-mesh VPC peering for many-to-many connectivity instead of Transit Gateway — TGW scales linearly while peering scales quadratically",
+    "Forgetting that Transit Gateway is Region-scoped — use inter-Region TGW peering for cross-Region connectivity, not a single global TGW",
+    "Not creating separate TGW route tables for network segmentation — a single route table allows all attachments to communicate with each other",
+    "Overlooking the TGW attachment subnet requirement — you must specify a subnet in each AZ where VPC resources need TGW connectivity",
+    "Not leveraging ECMP for VPN bandwidth — a single VPN tunnel is limited to 1.25 Gbps, but multiple tunnels with ECMP can aggregate to higher throughput"
   ],
   "relatedTopics": ["vpc-peering", "what-is-vpc", "vpn-connections", "direct-connect"]
 }

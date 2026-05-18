@@ -4,26 +4,52 @@
   "sectionId": "networking",
   "clusterId": "cluster-4",
   "order": 11,
-  "explanation": "AWS Direct Connect establishes a dedicated private network connection from your on-premises data center to AWS. It bypasses the public internet, providing more consistent network performance and reduced bandwidth costs.",
-  "analogy": "Direct Connect is like having a private road built directly from your house to the office — no traffic lights, no other cars, just a dedicated lane for your use.",
-  "diagram": "/diagrams/direct-connect-overview.svg",
+  "explanation": "AWS Direct Connect (DX) establishes a dedicated private network connection from your on-premises data center to AWS, bypassing the public internet entirely. This provides more consistent network performance, reduced latency, and lower data transfer costs compared to internet-based connections like VPN.\n\nDirect Connect operates through **Direct Connect locations** — colocation facilities where AWS has networking equipment. You establish a cross-connect (physical cable) between your router (or your partner's router) and the AWS router at the DX location.\n\nConnection types:\n- **Dedicated connection**: A physical Ethernet port (1 Gbps, 10 Gbps, or 100 Gbps) provisioned directly to you. Requires a Letter of Authorization (LOA) and takes weeks to provision\n- **Hosted connection**: A sub-rate connection (50 Mbps to 10 Gbps) provisioned through an AWS Direct Connect Partner. Faster to set up but still requires physical infrastructure\n\nVirtual Interfaces (VIFs):\n- **Private VIF**: Connects to a VPC via Virtual Private Gateway or Direct Connect Gateway. Uses private IP addresses\n- **Public VIF**: Connects to AWS public services (S3, DynamoDB, etc.) using public IP addresses — traffic still stays off the public internet\n- **Transit VIF**: Connects to a Transit Gateway, enabling access to multiple VPCs through a single VIF\n\nHigh availability patterns:\n- **Single DX + VPN backup**: DX as primary, Site-to-Site VPN as failover (most common exam scenario)\n- **Dual DX connections**: Two connections at different DX locations for maximum resilience\n- **DX Gateway**: Enables a single DX connection to reach VPCs in multiple Regions\n\nFor the SAP-C02 exam, Direct Connect questions focus on hybrid architecture design, HA patterns (DX + VPN failover), DX Gateway for multi-Region access, encryption options (MACsec for Layer 2, VPN over DX for Layer 3), and understanding provisioning lead times.",
+  "analogy": "Direct Connect is like having a private road built directly from your house to your office. There are no traffic lights, no other cars, and no unpredictable delays — just a dedicated lane exclusively for your use. The downside is that building this private road takes weeks of construction (provisioning time) and costs more upfront than just using the public highway (internet). But once built, the commute is faster, more predictable, and cheaper per trip (lower data transfer costs).",
+  "diagram": "┌─── On-Premises ───┐    ┌── DX Location ──┐    ┌──── AWS Cloud ─────────┐\n│                    │    │  (Colocation)    │    │                         │\n│  ┌──────────────┐ │    │                  │    │  ┌─── DX Gateway ─────┐│\n│  │ Corp Network │ │    │  ┌────────────┐  │    │  │                     ││\n│  │              │ │    │  │ Your Router│  │    │  │  ┌─ Private VIF ──┐ ││\n│  │  ┌────────┐  │ │    │  │            │  │    │  │  │  → VPC-A (us-e)│ ││\n│  │  │ Router │──┼─┼────┼──┤Cross-Connect├──┼────┼──┤  │  → VPC-B (eu-w)│ ││\n│  │  └────────┘  │ │    │  │  (1/10/100G)│  │    │  │  └────────────────┘ ││\n│  │              │ │    │  └────────────┘  │    │  │                     ││\n│  └──────────────┘ │    │                  │    │  │  ┌─ Transit VIF ──┐ ││\n│                    │    │  ┌────────────┐  │    │  │  │  → TGW (multi- │ ││\n│                    │    │  │ AWS Router │  │    │  │  │    VPC access)  │ ││\n│                    │    │  └────────────┘  │    │  │  └────────────────┘ ││\n│                    │    │                  │    │  │                     ││\n│                    │    └──────────────────┘    │  │  ┌─ Public VIF ───┐ ││\n│                    │                            │  │  │  → S3, DynamoDB│ ││\n│                    │                            │  │  │  → Public AWS  │ ││\n│                    │                            │  │  └────────────────┘ ││\n│                    │                            │  └─────────────────────┘│\n│                    │                            │                         │\n└────────────────────┘                            └─────────────────────────┘\n\n┌─── High Availability Pattern ───────────────────────────────────────────┐\n│                                                                          │\n│  On-Premises ──── DX Connection 1 (Primary) ────► AWS                   │\n│       │                                              ▲                   │\n│       └────────── Site-to-Site VPN (Backup) ─────────┘                   │\n│                   (lower BGP preference)                                 │\n│                                                                          │\n└──────────────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Provides dedicated 1 Gbps or 10 Gbps connections (or hosted connections at lower speeds)",
-    "Bypasses the public internet for more consistent latency",
-    "Supports both private VIF (VPC access) and public VIF (AWS public services)",
-    "Takes weeks to provision — not suitable for urgent connectivity needs"
+    "Provides dedicated 1 Gbps, 10 Gbps, or 100 Gbps connections that bypass the public internet for consistent latency and higher throughput",
+    "Takes weeks to provision — not suitable for urgent connectivity needs. Plan ahead or use VPN as an interim solution",
+    "Virtual Interfaces: Private VIF (VPC access), Public VIF (AWS public services), Transit VIF (Transit Gateway for multi-VPC)",
+    "Direct Connect Gateway enables a single DX connection to reach VPCs in multiple AWS Regions — no need for separate connections per Region",
+    "Does NOT encrypt traffic by default — use MACsec (Layer 2 encryption on 10/100 Gbps) or run a VPN over the DX connection for Layer 3 encryption",
+    "Common HA pattern: primary DX connection with Site-to-Site VPN as backup, using BGP route preferences to control failover",
+    "Data transfer OUT over Direct Connect is significantly cheaper than over the internet (~$0.02/GB vs ~$0.09/GB depending on Region)"
   ],
   "examKeywords": [
     {
       "term": "Direct Connect",
       "type": "service-reference",
-      "definition": "A dedicated private network connection from on-premises to AWS, bypassing the public internet for consistent performance and reduced data transfer costs.",
+      "definition": "A dedicated private network connection from on-premises to AWS via a colocation facility, providing consistent performance, reduced latency, and lower data transfer costs.",
       "svgDiagram": "/diagrams/mini/dx-icon.svg"
+    },
+    {
+      "term": "Direct Connect Gateway",
+      "type": "service-reference",
+      "definition": "A globally available resource that enables a single Direct Connect connection to access VPCs in multiple AWS Regions through private or transit VIFs."
+    },
+    {
+      "term": "Virtual Interface (VIF)",
+      "type": "architecture-term",
+      "definition": "A logical interface on a Direct Connect connection. Private VIF connects to VPCs, Public VIF to AWS public services, Transit VIF to Transit Gateway."
+    },
+    {
+      "term": "MACsec",
+      "type": "exam-signal",
+      "definition": "IEEE 802.1AE Layer 2 encryption available on 10 Gbps and 100 Gbps Direct Connect connections, providing point-to-point encryption without VPN overhead."
+    },
+    {
+      "term": "Link Aggregation Group (LAG)",
+      "type": "architecture-term",
+      "definition": "A logical interface that bundles multiple Direct Connect connections at a single DX location into one managed connection, using LACP for aggregated bandwidth."
     }
   ],
   "commonMistakes": [
-    "Not planning for the weeks-long provisioning time of Direct Connect",
-    "Forgetting to set up a VPN as backup for Direct Connect failover"
+    "Not planning for the weeks-long provisioning time — use VPN as an interim or backup connection while DX is being set up",
+    "Assuming Direct Connect is encrypted by default — it is NOT. Use MACsec (10/100G) or VPN-over-DX for encryption",
+    "Forgetting to set up a VPN as backup for Direct Connect failover — a single DX connection is a single point of failure",
+    "Using a Private VIF per Region instead of a Direct Connect Gateway, which provides multi-Region access from a single connection",
+    "Not understanding the difference between Dedicated connections (you own the port) and Hosted connections (partner provisions sub-rate capacity)"
   ],
-  "relatedTopics": ["vpn-connections", "transit-gateway", "vpc-endpoints"]
+  "relatedTopics": ["vpn-connections", "transit-gateway", "vpc-endpoints", "privatelink"]
 }

@@ -4,26 +4,47 @@
   "sectionId": "networking",
   "clusterId": "cluster-5",
   "order": 15,
-  "explanation": "Amazon CloudFront is a content delivery network (CDN) that delivers data, videos, applications, and APIs globally with low latency and high transfer speeds. It caches content at edge locations worldwide.",
-  "analogy": "CloudFront is like a chain of local libraries — instead of everyone traveling to the main library (origin), copies of popular books (content) are distributed to branches (edge locations) closer to readers.",
-  "diagram": "/diagrams/cloudfront-overview.svg",
+  "explanation": "Amazon CloudFront is a global content delivery network (CDN) that caches and delivers data, videos, applications, and APIs from edge locations worldwide with low latency and high transfer speeds. CloudFront reduces load on your origin servers by serving cached content from the location closest to the user.\n\nCloudFront architecture:\n- **Edge locations** (450+): Cache content closest to end users for lowest latency\n- **Regional edge caches** (13): Larger caches between edge locations and your origin — retain content longer than edge locations\n- **Origin**: Your source of truth — S3 bucket, ALB, EC2, API Gateway, or any HTTP server\n\nKey features for SAP-C02:\n- **Origin Access Control (OAC)**: Restricts S3 bucket access so content can only be served through CloudFront, not directly from S3\n- **Cache behaviors**: Rules that match URL patterns and define caching, origin, and viewer protocol settings\n- **Lambda@Edge**: Run code at edge locations for request/response manipulation (viewer request, origin request, origin response, viewer response)\n- **CloudFront Functions**: Lightweight JavaScript functions for simple transformations at even higher scale than Lambda@Edge\n- **Field-level encryption**: Encrypt sensitive form fields at the edge before forwarding to origin\n- **Signed URLs/Cookies**: Restrict access to content for authorized users with time-limited tokens\n\nCloudFront vs. Global Accelerator: CloudFront caches content at the edge (Layer 7, HTTP/HTTPS). Global Accelerator optimizes the network path (Layer 4, TCP/UDP) without caching. Use CloudFront for cacheable content; use Global Accelerator for non-cacheable, latency-sensitive TCP/UDP traffic.\n\nFor the SAP-C02 exam, CloudFront questions test cache invalidation strategies, OAC configuration, Lambda@Edge use cases, geo-restriction, and multi-origin architectures with failover.",
+  "analogy": "CloudFront is like a franchise of local convenience stores stocking popular items from a central warehouse. Instead of every customer driving to the warehouse (origin) for a bottle of water (static content), the local store (edge location) keeps copies in stock. When a new product arrives, it takes time for stores to restock (cache TTL). If a product is recalled, the warehouse must notify all stores to remove it (cache invalidation).",
+  "diagram": "┌──────────────────── CloudFront Distribution ───────────────────┐\n│                                                                  │\n│  User (Sydney) ──► Edge Location (Sydney)                       │\n│                         │                                        │\n│                    Cache HIT? ──── Yes ──► Return cached content │\n│                         │                                        │\n│                        No (cache miss)                           │\n│                         │                                        │\n│                         ▼                                        │\n│                  Regional Edge Cache (Asia-Pacific)              │\n│                         │                                        │\n│                    Cache HIT? ──── Yes ──► Cache at edge + return│\n│                         │                                        │\n│                        No                                        │\n│                         │                                        │\n│                         ▼                                        │\n│  ┌─── Origin Group (Failover) ────────────────────────────┐    │\n│  │                                                         │    │\n│  │  Primary: S3 Bucket (us-east-1)                        │    │\n│  │     │                                                   │    │\n│  │     └─ OAC: Only CloudFront can access this bucket     │    │\n│  │                                                         │    │\n│  │  Failover: S3 Bucket (eu-west-1)                       │    │\n│  │     └─ Used if primary returns 5xx or times out        │    │\n│  └─────────────────────────────────────────────────────────┘    │\n│                                                                  │\n│  ┌─── Cache Behaviors ────────────────────────────────────┐    │\n│  │  /api/*     → ALB origin (no caching, TTL=0)          │    │\n│  │  /images/*  → S3 origin (cache 24h)                    │    │\n│  │  /static/*  → S3 origin (cache 1 year, versioned)     │    │\n│  │  Default(*) → ALB origin (cache 1h)                    │    │\n│  └────────────────────────────────────────────────────────┘    │\n│                                                                  │\n│  ┌─── Edge Compute ──────────────────────────────────────┐    │\n│  │  Lambda@Edge: URL rewriting, auth, A/B testing         │    │\n│  │  CloudFront Functions: Header manipulation, redirects  │    │\n│  └────────────────────────────────────────────────────────┘    │\n└──────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Over 400 edge locations and 13 regional edge caches worldwide",
-    "Supports custom SSL certificates and HTTPS enforcement",
-    "Origin Access Control (OAC) restricts S3 access to CloudFront only",
-    "Lambda@Edge and CloudFront Functions enable edge compute"
+    "450+ edge locations and 13 regional edge caches worldwide — content is served from the location closest to the user",
+    "Origin Access Control (OAC) restricts S3 bucket access exclusively to CloudFront, preventing direct S3 URL access",
+    "Cache behaviors match URL patterns to define per-path caching rules, origins, and viewer protocol policies",
+    "Lambda@Edge runs at 4 trigger points (viewer request/response, origin request/response) for dynamic content manipulation",
+    "Origin failover: configure an origin group with primary and secondary origins — automatic failover on 5xx errors or timeouts",
+    "Signed URLs and signed cookies restrict content access to authorized users with time-limited, cryptographically signed tokens",
+    "Cache invalidation removes objects from edge caches before TTL expires — charged per invalidation path (first 1,000/month free)"
   ],
   "examKeywords": [
     {
       "term": "CloudFront",
       "type": "service-reference",
-      "definition": "AWS CDN service that caches and delivers content from edge locations worldwide, reducing latency for global users.",
+      "definition": "AWS global CDN that caches content at 450+ edge locations, reducing latency for users worldwide. Supports S3, ALB, EC2, and custom HTTP origins.",
       "svgDiagram": "/diagrams/mini/cf-icon.svg"
+    },
+    {
+      "term": "Origin Access Control",
+      "type": "exam-signal",
+      "definition": "A CloudFront feature that restricts S3 bucket access so objects can only be retrieved through the CloudFront distribution, not via direct S3 URLs."
+    },
+    {
+      "term": "Lambda@Edge",
+      "type": "service-reference",
+      "definition": "A feature that runs Lambda functions at CloudFront edge locations to customize content delivery — supports viewer/origin request/response triggers."
+    },
+    {
+      "term": "cache invalidation",
+      "type": "architecture-term",
+      "definition": "The process of removing cached objects from CloudFront edge locations before their TTL expires, forcing the next request to fetch fresh content from the origin."
     }
   ],
   "commonMistakes": [
-    "Not invalidating cache after content updates — stale content persists until TTL expires",
-    "Using CloudFront for dynamic content without understanding cache behaviors"
+    "Not invalidating cache after content updates — users continue receiving stale content until the TTL expires. Use versioned file names (app-v2.js) instead of invalidation for cost efficiency",
+    "Using CloudFront for non-cacheable real-time TCP/UDP traffic — Global Accelerator is the correct choice for latency-sensitive non-HTTP workloads",
+    "Forgetting to configure OAC when using S3 as origin — without it, users can bypass CloudFront and access S3 directly if the bucket policy allows",
+    "Confusing Lambda@Edge (runs in 13+ Regional edge caches, supports Node.js/Python, up to 30s) with CloudFront Functions (runs at all 450+ edge locations, JavaScript only, sub-millisecond, up to 10KB)",
+    "Not setting up origin failover for critical content — a single origin failure causes 5xx errors for all users until manually resolved"
   ],
-  "relatedTopics": ["route-53", "elastic-load-balancing", "global-accelerator"]
+  "relatedTopics": ["route-53", "elastic-load-balancing", "global-accelerator", "security-groups"]
 }

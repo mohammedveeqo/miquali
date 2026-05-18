@@ -4,25 +4,46 @@
   "sectionId": "networking",
   "clusterId": "cluster-6",
   "order": 16,
-  "explanation": "AWS Global Accelerator is a networking service that improves the availability and performance of applications by directing traffic through the AWS global network instead of the public internet. It provides static anycast IP addresses.",
-  "analogy": "Global Accelerator is like an express highway on-ramp — instead of navigating through city streets (public internet), traffic enters the fast lane (AWS backbone) at the nearest on-ramp (edge location).",
-  "diagram": "/diagrams/global-accelerator-overview.svg",
+  "explanation": "AWS Global Accelerator is a networking service that improves the availability and performance of your applications by directing user traffic through the AWS global network instead of the public internet. It provides two static anycast IPv4 addresses that serve as a fixed entry point to your application, regardless of which Region or endpoint is serving the traffic.\n\nHow it works: When a user connects to your Global Accelerator address, their traffic enters the AWS network at the nearest edge location (same 450+ locations as CloudFront). From there, it travels over the AWS backbone — a private, congestion-free network — to your application endpoints. This eliminates the variability of internet routing.\n\nKey differentiator from CloudFront:\n- **Global Accelerator**: Optimizes the network path (Layer 4). Does NOT cache content. Proxies TCP/UDP connections over the AWS backbone. Best for non-HTTP workloads, gaming, VoIP, and any application needing static IPs\n- **CloudFront**: Caches content at the edge (Layer 7). Best for HTTP/HTTPS content delivery\n\nEndpoint types supported:\n- Application Load Balancers (ALB)\n- Network Load Balancers (NLB)\n- EC2 instances\n- Elastic IP addresses\n\nTraffic management:\n- **Endpoint weights**: Control traffic distribution within an endpoint group (0-255)\n- **Traffic dials**: Control percentage of traffic directed to each Region (0-100%)\n- **Health checks**: Automatic failover to healthy endpoints in seconds (not minutes like DNS)\n\nFor the SAP-C02 exam, Global Accelerator questions test the distinction from CloudFront, use cases requiring static IPs, instant Regional failover (vs. DNS TTL-based failover), and blue/green deployment patterns using traffic dials.",
+  "analogy": "Global Accelerator is like an express highway on-ramp system. Instead of navigating through congested city streets (public internet) to reach your destination, you enter the nearest express on-ramp (edge location) and travel on a dedicated highway (AWS backbone) directly to your destination. The on-ramp address never changes (static anycast IP), even if the destination moves to a different city (Region failover). Unlike a delivery warehouse (CloudFront), the highway does not store packages — it just gets them there faster.",
+  "diagram": "┌──────────────── Global Accelerator ────────────────────────────┐\n│                                                                  │\n│  Static Anycast IPs: 75.2.x.x, 99.83.x.x                      │\n│  (Fixed entry points — never change)                            │\n│                                                                  │\n│  ┌─── User (Tokyo) ──┐    ┌─── User (London) ──┐              │\n│  │  Connects to       │    │  Connects to        │              │\n│  │  75.2.x.x          │    │  75.2.x.x           │              │\n│  └────────┬───────────┘    └────────┬────────────┘              │\n│           │                          │                           │\n│           ▼                          ▼                           │\n│  ┌─ Edge (Tokyo) ─┐        ┌─ Edge (London) ─┐                 │\n│  │ Enter AWS       │        │ Enter AWS        │                 │\n│  │ backbone here   │        │ backbone here    │                 │\n│  └────────┬────────┘        └────────┬─────────┘                │\n│           │                          │                           │\n│           │    AWS Global Backbone   │                           │\n│           │    (private, low-latency) │                           │\n│           │                          │                           │\n│           ▼                          ▼                           │\n│  ┌─── Endpoint Group ───┐  ┌─── Endpoint Group ───┐            │\n│  │  Region: ap-northeast │  │  Region: eu-west-1   │            │\n│  │  Traffic dial: 100%   │  │  Traffic dial: 100%   │            │\n│  │                       │  │                       │            │\n│  │  ┌─ ALB (weight:70) ┐│  │  ┌─ ALB (weight:70) ┐│            │\n│  │  └──────────────────┘│  │  └──────────────────┘│            │\n│  │  ┌─ NLB (weight:30) ┐│  │  ┌─ NLB (weight:30) ┐│            │\n│  │  └──────────────────┘│  │  └──────────────────┘│            │\n│  └───────────────────────┘  └───────────────────────┘            │\n│                                                                  │\n│  Failover: If ap-northeast unhealthy → traffic shifts to        │\n│  eu-west-1 in seconds (no DNS TTL wait)                         │\n└──────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Provides two static anycast IP addresses for your application",
-    "Routes traffic through the AWS global network for improved performance",
-    "Supports instant failover between endpoints across Regions",
-    "Works with ALB, NLB, EC2, and Elastic IP endpoints"
+    "Provides two static anycast IPv4 addresses as fixed entry points — useful for allowlisting, DNS-independent failover, and IP-based clients",
+    "Routes traffic through the AWS global backbone network from the nearest edge location, eliminating public internet variability",
+    "Does NOT cache content — it optimizes the network path (Layer 4 TCP/UDP proxy). Use CloudFront for content caching",
+    "Instant failover between endpoints in seconds using health checks — much faster than DNS-based failover which depends on TTL",
+    "Traffic dials (0-100%) control Regional traffic distribution — ideal for blue/green deployments and gradual Region migrations",
+    "Supports ALB, NLB, EC2, and Elastic IP endpoints across multiple Regions in a single accelerator",
+    "Client IP preservation available for ALB and EC2 endpoints — important for geo-based access control and logging"
   ],
   "examKeywords": [
     {
       "term": "Global Accelerator",
       "type": "service-reference",
-      "definition": "A networking service providing static anycast IPs and routing traffic through the AWS global network for improved availability and performance."
+      "definition": "A networking service providing two static anycast IPs that route traffic over the AWS global backbone for improved performance and instant multi-Region failover."
+    },
+    {
+      "term": "anycast IP",
+      "type": "exam-signal",
+      "definition": "An IP address advertised from multiple locations simultaneously. Traffic is routed to the nearest advertising location, providing geographic load balancing without DNS."
+    },
+    {
+      "term": "traffic dial",
+      "type": "architecture-term",
+      "definition": "A Global Accelerator control (0-100%) that determines what percentage of traffic is directed to an endpoint group (Region). Used for blue/green deployments."
+    },
+    {
+      "term": "endpoint group",
+      "type": "architecture-term",
+      "definition": "A collection of endpoints in a single AWS Region within a Global Accelerator listener. Each group has a traffic dial and health check configuration."
     }
   ],
   "commonMistakes": [
-    "Confusing Global Accelerator (Layer 4, anycast IPs) with CloudFront (Layer 7, content caching)",
-    "Not understanding that Global Accelerator does not cache content — it optimizes the network path"
+    "Confusing Global Accelerator (Layer 4, no caching, static IPs, TCP/UDP proxy) with CloudFront (Layer 7, caches content, no static IPs, HTTP/HTTPS)",
+    "Using DNS-based failover (Route 53) when instant failover is required — Global Accelerator fails over in seconds without waiting for DNS TTL expiration",
+    "Not understanding that Global Accelerator does not cache content — it only optimizes the network path between users and your endpoints",
+    "Overlooking traffic dials for blue/green deployments — they allow gradual traffic shifting between Regions without DNS changes",
+    "Forgetting that Global Accelerator requires endpoints in at least one Region — it is not a standalone service but a network optimization layer"
   ],
-  "relatedTopics": ["cloudfront", "route-53", "elastic-load-balancing"]
+  "relatedTopics": ["cloudfront", "route-53", "elastic-load-balancing", "transit-gateway"]
 }

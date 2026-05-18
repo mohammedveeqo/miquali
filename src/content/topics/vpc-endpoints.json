@@ -4,25 +4,46 @@
   "sectionId": "networking",
   "clusterId": "cluster-6",
   "order": 17,
-  "explanation": "VPC endpoints enable private connections between your VPC and supported AWS services without requiring an internet gateway, NAT device, VPN, or Direct Connect. There are two types: interface endpoints and gateway endpoints.",
-  "analogy": "VPC endpoints are like internal mail slots — you can send packages to AWS services through a private slot in your wall without going outside to the mailbox.",
-  "diagram": "/diagrams/vpc-endpoints-overview.svg",
+  "explanation": "VPC endpoints enable private connections between your VPC and supported AWS services without requiring an Internet Gateway, NAT device, VPN connection, or Direct Connect. Traffic between your VPC and the service stays entirely within the AWS network.\n\nThere are two types of VPC endpoints with fundamentally different architectures:\n\n**Gateway Endpoints** (S3 and DynamoDB only):\n- Free — no hourly or data processing charges\n- Implemented as a route table entry pointing to a prefix list\n- You add the endpoint as a target in your subnet route tables\n- Cannot be accessed from on-premises (VPN/Direct Connect) or from peered VPCs\n- One gateway endpoint per service per VPC\n\n**Interface Endpoints** (powered by PrivateLink, 100+ services):\n- Creates an ENI with a private IP in your specified subnets\n- Charged per hour (~$0.01/hr per AZ) plus data processed (~$0.01/GB)\n- Supports security groups for access control\n- Can be accessed from on-premises via Direct Connect or VPN\n- Private DNS option resolves the service's default hostname to the endpoint's private IP\n- AZ-scoped — deploy in each AZ where your applications run\n\n**Endpoint policies** control which AWS resources can be accessed through the endpoint. For example, you can restrict an S3 gateway endpoint to allow access only to a specific bucket, implementing least-privilege network access.\n\nFor the SAP-C02 exam, VPC endpoint questions test cost optimization (gateway endpoints for S3/DynamoDB instead of NAT Gateway), security architecture (endpoint policies for data exfiltration prevention), and choosing between gateway and interface endpoints for S3 access patterns.",
+  "analogy": "VPC endpoints are like internal mail slots built into your office wall. A gateway endpoint is like a free mail chute that goes directly to two specific departments (S3 and DynamoDB) — you just update the building directory (route table) to point to it. An interface endpoint is like installing a private intercom (ENI) in your office that connects to any department in the building — it costs a small monthly fee, but you can talk to over 100 different departments and even connect it to your home office (on-premises).",
+  "diagram": "┌────────────────────── VPC ──────────────────────────────────────┐\n│                                                                  │\n│  ┌─── Private Subnet ────────────────────────────────────────┐  │\n│  │                                                            │  │\n│  │  [Application Server]                                      │  │\n│  │       │                                                    │  │\n│  │       ├──► S3 request ──► Route table: pl-xxx → vpce-gw   │  │\n│  │       │                                                    │  │\n│  │       └──► KMS request ──► Interface Endpoint ENI          │  │\n│  │                                  (10.0.1.88)               │  │\n│  └────────────────────────────────────────────────────────────┘  │\n│                                                                  │\n│  ┌─── Gateway Endpoint (S3) ─────────────────────────────────┐  │\n│  │                                                            │  │\n│  │  Type: Gateway                                             │  │\n│  │  Service: com.amazonaws.us-east-1.s3                       │  │\n│  │  Implementation: Route table entry → prefix list           │  │\n│  │  Cost: FREE                                                │  │\n│  │  Access from on-prem: NO                                   │  │\n│  │                                                            │  │\n│  │  Route Table Entry:                                        │  │\n│  │  ┌────────────────────┬─────────────────┐                 │  │\n│  │  │ Destination        │ Target          │                 │  │\n│  │  ├────────────────────┼─────────────────┤                 │  │\n│  │  │ pl-63a5400a (S3)   │ vpce-0abc123    │                 │  │\n│  │  └────────────────────┴─────────────────┘                 │  │\n│  └────────────────────────────────────────────────────────────┘  │\n│                                                                  │\n│  ┌─── Interface Endpoint (KMS) ──────────────────────────────┐  │\n│  │                                                            │  │\n│  │  Type: Interface (PrivateLink)                             │  │\n│  │  Service: com.amazonaws.us-east-1.kms                      │  │\n│  │  Implementation: ENI in subnet (private IP)                │  │\n│  │  Cost: ~$0.01/hr/AZ + $0.01/GB                           │  │\n│  │  Access from on-prem: YES (via DX/VPN + private DNS)      │  │\n│  │  Security Group: sg-endpoint (controls access)             │  │\n│  │                                                            │  │\n│  │  Private DNS: kms.us-east-1.amazonaws.com → 10.0.1.88    │  │\n│  └────────────────────────────────────────────────────────────┘  │\n│                                                                  │\n│  ┌─── Endpoint Policy (Data Exfiltration Prevention) ────────┐  │\n│  │  {                                                         │  │\n│  │    \"Effect\": \"Allow\",                                     │  │\n│  │    \"Principal\": \"*\",                                      │  │\n│  │    \"Action\": \"s3:*\",                                      │  │\n│  │    \"Resource\": \"arn:aws:s3:::my-bucket/*\"                 │  │\n│  │  }                                                         │  │\n│  │  ► Only allows access to specific bucket through endpoint │  │\n│  └────────────────────────────────────────────────────────────┘  │\n└──────────────────────────────────────────────────────────────────┘",
   "keyPoints": [
-    "Gateway endpoints: free, support S3 and DynamoDB only, use route table entries",
-    "Interface endpoints: use PrivateLink, create ENIs in your subnet, support 100+ services",
-    "Traffic never leaves the AWS network",
-    "Endpoint policies control which resources can be accessed"
+    "Gateway endpoints are FREE and support only S3 and DynamoDB — implemented as route table entries pointing to a managed prefix list",
+    "Interface endpoints use PrivateLink (ENIs with private IPs) and support 100+ AWS services — charged per hour per AZ plus data processed",
+    "Endpoint policies restrict which resources can be accessed through the endpoint — critical for preventing data exfiltration to unauthorized buckets",
+    "Gateway endpoints cannot be accessed from on-premises (VPN/DX) or peered VPCs; interface endpoints can be accessed from both",
+    "S3 supports BOTH gateway endpoints (free, route-table-based) and interface endpoints (charged, ENI-based, accessible from on-prem)",
+    "Interface endpoints support security groups — use them to restrict which resources in your VPC can access the endpoint",
+    "Private DNS on interface endpoints resolves the service's default hostname to the private ENI IP — no application code changes needed"
   ],
   "examKeywords": [
     {
-      "term": "VPC endpoint",
+      "term": "gateway endpoint",
       "type": "architecture-term",
-      "definition": "A private connection between a VPC and AWS services that does not require internet access. Gateway type (S3/DynamoDB) or Interface type (PrivateLink)."
+      "definition": "A free VPC endpoint for S3 and DynamoDB that adds a route table entry. Cannot be accessed from on-premises or peered VPCs."
+    },
+    {
+      "term": "interface endpoint",
+      "type": "architecture-term",
+      "definition": "A VPC endpoint powered by PrivateLink that creates an ENI with a private IP. Supports 100+ services, security groups, and on-premises access."
+    },
+    {
+      "term": "endpoint policy",
+      "type": "exam-signal",
+      "definition": "An IAM resource policy attached to a VPC endpoint that controls which AWS resources can be accessed through it — used for data exfiltration prevention."
+    },
+    {
+      "term": "prefix list",
+      "type": "architecture-term",
+      "definition": "A managed set of CIDR blocks representing an AWS service's IP ranges. Used in route tables for gateway endpoints and in security group rules."
     }
   ],
   "commonMistakes": [
-    "Using a NAT Gateway to access S3 when a free Gateway endpoint would suffice",
-    "Confusing gateway endpoints (route table based, free) with interface endpoints (ENI based, charged)"
+    "Using a NAT Gateway to access S3 or DynamoDB when a free gateway endpoint would eliminate data processing charges entirely",
+    "Confusing gateway endpoints (route-table-based, free, S3/DynamoDB only, no on-prem access) with interface endpoints (ENI-based, charged, 100+ services, on-prem accessible)",
+    "Not configuring endpoint policies — without them, any principal in the VPC can access any resource through the endpoint, enabling data exfiltration",
+    "Choosing a gateway endpoint for S3 when on-premises access is required — only interface endpoints can be reached from VPN/Direct Connect",
+    "Forgetting to deploy interface endpoints in each AZ where applications run — cross-AZ traffic to endpoints incurs additional latency and charges"
   ],
-  "relatedTopics": ["privatelink", "nat-gateway", "what-is-vpc"]
+  "relatedTopics": ["privatelink", "nat-gateway", "what-is-vpc", "direct-connect"]
 }
