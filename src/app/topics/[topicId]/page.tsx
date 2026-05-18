@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { TopicTabs } from '@/components/topic/TopicTabs';
+import { TopicConversation } from '@/components/topic/TopicConversation';
 import { getTopicContent, getProgressionConfig } from '@/services/content-service';
 import type { QAQuestion } from '@/types';
 
@@ -20,8 +20,7 @@ export default async function TopicPageRoute({ params }: TopicPageRouteProps) {
     notFound();
   }
 
-  // Load qaQuestions from the topic JSON (they're part of the JSON file but not in the TS type yet for TopicContent)
-  // We read them directly from the raw JSON
+  // Load qaQuestions from the topic JSON
   let qaQuestions: QAQuestion[] = [];
   try {
     const fs = await import('fs/promises');
@@ -37,7 +36,7 @@ export default async function TopicPageRoute({ params }: TopicPageRouteProps) {
   }
 
   return (
-    <TopicTabs
+    <TopicConversation
       topic={topic}
       qaQuestions={qaQuestions}
       progression={progression}

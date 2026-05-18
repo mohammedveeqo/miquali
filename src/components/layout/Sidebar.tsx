@@ -7,10 +7,10 @@
  * Collapsible on mobile via hamburger menu.
  *
  * Status indicators:
- * ✅ = completed (3 Q&A passes / miniQuizPassed)
- * ← = current (active topic being viewed)
+ * ● = current topic (being viewed)
+ * ✅ = completed (3 Q&A passes)
  * 🔒 = locked (previous not complete) — still clickable
- * ○ = not started
+ * (no indicator) = not started but accessible
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
@@ -65,13 +65,16 @@ export function Sidebar() {
 
   /**
    * Determine the status indicator for a topic.
-   * ✅ = completed, ← = current, 🔒 = locked (prev not done), ○ = not started
+   * ● = current (being viewed)
+   * ✅ = completed (3 Q&A passes)
+   * 🔒 = locked (previous not complete)
+   * (empty) = not started but accessible
    */
   function getStatusIndicator(topicId: string): { symbol: string; label: string; className: string } {
-    const isActive = pathname === `/topics/${topicId}`;
+    const active = pathname === `/topics/${topicId}`;
 
-    if (isActive) {
-      return { symbol: '←', label: 'current', className: 'text-blue-400' };
+    if (active) {
+      return { symbol: '●', label: 'current', className: 'text-blue-400' };
     }
 
     const progress = topicProgress[topicId];
@@ -89,11 +92,12 @@ export function Sidebar() {
       }
     }
 
-    return { symbol: '○', label: 'not started', className: 'text-zinc-500' };
+    // Accessible but not started — no indicator
+    return { symbol: '', label: 'not started', className: '' };
   }
 
   /** Check if a topic is currently active */
-  function isActive(topicId: string): boolean {
+  function isTopicActive(topicId: string): boolean {
     return pathname === `/topics/${topicId}`;
   }
 
@@ -128,7 +132,7 @@ export function Sidebar() {
               {section.clusters.flatMap((cluster) =>
                 cluster.topicIds.map((topicId) => {
                   const status = getStatusIndicator(topicId);
-                  const active = isActive(topicId);
+                  const active = isTopicActive(topicId);
                   return (
                     <li key={topicId}>
                       <Link

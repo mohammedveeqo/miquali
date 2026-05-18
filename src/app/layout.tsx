@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
-import { Sidebar } from '@/components/layout/Sidebar';
+import { LayoutShell } from '@/components/layout/LayoutShell';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,19 +28,7 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        {/* Docs-site two-column layout */}
-        <div className="flex min-h-screen">
-          {/* Fixed sidebar */}
-          <Sidebar />
-
-          {/* Main content area — offset by sidebar width on desktop */}
-          <main
-            id="main-content"
-            className="flex-1 md:ml-[250px] min-h-screen"
-          >
-            {children}
-          </main>
-        </div>
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );
