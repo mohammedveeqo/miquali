@@ -1,5 +1,5 @@
 /**
- * Barrel export for all QualCheck type definitions.
+ * Barrel export for all MiQuali type definitions.
  * Import types from '@/types' for convenience.
  */
 

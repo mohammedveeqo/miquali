@@ -19,7 +19,7 @@ import type {
 } from '@/types';
 
 /** localStorage key for persisted progress state */
-const STORAGE_KEY = 'qualcheck-progress';
+const STORAGE_KEY = 'miquali-progress';
 
 /** Actions available on the progress store */
 interface ProgressActions {
@@ -381,7 +381,7 @@ export const useProgressStore = create<
           if (error) {
             // Corrupted state detected during hydration — reset to defaults
             console.error(
-              '[QualCheck] Failed to hydrate progress state from localStorage. Resetting to defaults.',
+              '[MiQuali] Failed to hydrate progress state from localStorage. Resetting to defaults.',
               error
             );
             useProgressStore.setState({

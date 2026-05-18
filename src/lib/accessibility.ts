@@ -1,5 +1,5 @@
 /**
- * Accessibility utilities for QualCheck.
+ * Accessibility utilities for MiQuali.
  *
  * Provides helpers for:
  * - Screen reader announcements via live regions

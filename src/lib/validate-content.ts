@@ -189,7 +189,7 @@ function validateDirectory(
 // ─── Run Validation ─────────────────────────────────────────────────────────
 
 console.log('╔══════════════════════════════════════════════════════════════╗');
-console.log('║          QualCheck Content Validation                       ║');
+console.log('║          MiQuali Content Validation                       ║');
 console.log('╚══════════════════════════════════════════════════════════════╝\n');
 
 // 1. Topics

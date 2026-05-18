@@ -7,7 +7,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'QualCheck - AWS SAP-C02 Learning Platform',
+  title: 'MiQuali - AWS SAP-C02 Learning Platform',
   description:
     'Interactive learning platform for AWS Solutions Architect Professional certification',
 };

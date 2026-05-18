@@ -85,7 +85,7 @@ export function Sidebar() {
           className="text-lg font-bold text-foreground hover:text-primary transition-colors"
           onClick={closeMobile}
         >
-          QualCheck
+          MiQuali
         </Link>
         <p className="text-xs text-muted-foreground mt-0.5">
           AWS SAP-C02 · Networking
