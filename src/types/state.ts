@@ -4,11 +4,6 @@
  */
 
 import type { QuizQuestion } from './content';
-import type {
-  CanvasComponentInstance,
-  CanvasConnection,
-  ValidationResult,
-} from './canvas';
 import type { ChatMessage } from './ai';
 
 /** Progress tracking for a single topic */
@@ -100,23 +95,6 @@ export interface ProgressState {
   studyStreak: StudyStreakData;
   /** ISO date string of the last activity (YYYY-MM-DD) */
   lastActivityDate: string;
-}
-
-/**
- * Canvas store state for the architecture diagram builder.
- * Tracks the current diagram being edited.
- */
-export interface CanvasState {
-  /** All component instances on the current canvas */
-  components: CanvasComponentInstance[];
-  /** All connections between components */
-  connections: CanvasConnection[];
-  /** ID of the currently selected component (null if none) */
-  selectedComponent: string | null;
-  /** Current error-level validation violations */
-  validationErrors: ValidationResult[];
-  /** Current warning-level validation violations */
-  validationWarnings: ValidationResult[];
 }
 
 /**

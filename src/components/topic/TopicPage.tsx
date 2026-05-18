@@ -93,7 +93,7 @@ export function TopicPage({ topic }: TopicPageProps) {
         </CardContent>
       </Card>
 
-      {/* Diagram */}
+      {/* ASCII Diagram */}
       {topic.diagram && (
         <section aria-labelledby="diagram-heading" className="mb-8">
           <h2
@@ -103,14 +103,14 @@ export function TopicPage({ topic }: TopicPageProps) {
             Diagram
           </h2>
           <Card className="overflow-hidden">
-            <CardContent className="p-4 flex items-center justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={topic.diagram}
-                alt={`Architecture diagram for ${topic.title}`}
-                className="max-w-full h-auto"
-                loading="lazy"
-              />
+            <CardContent className="p-4">
+              <pre
+                className="text-xs sm:text-sm font-mono text-foreground/90 overflow-x-auto whitespace-pre leading-relaxed"
+                aria-label={`Architecture diagram for ${topic.title}`}
+                role="img"
+              >
+                {topic.diagram}
+              </pre>
             </CardContent>
           </Card>
         </section>

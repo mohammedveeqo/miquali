@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
-const inter = Inter({ subsets: ["latin"] });
+import { Sidebar } from '@/components/layout/Sidebar';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "QualCheck - AWS SAP-C02 Learning Platform",
+  title: 'QualCheck - AWS SAP-C02 Learning Platform',
   description:
-    "Interactive learning platform for AWS Solutions Architect Professional certification",
+    'Interactive learning platform for AWS Solutions Architect Professional certification',
 };
 
 export default function RootLayout({
@@ -25,7 +27,20 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <div id="main-content">{children}</div>
+
+        {/* Docs-site two-column layout */}
+        <div className="flex min-h-screen">
+          {/* Fixed sidebar */}
+          <Sidebar />
+
+          {/* Main content area — offset by sidebar width on desktop */}
+          <main
+            id="main-content"
+            className="flex-1 md:ml-[250px] min-h-screen"
+          >
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );

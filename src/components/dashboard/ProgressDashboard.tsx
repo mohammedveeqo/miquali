@@ -21,14 +21,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import type { ProgressionConfig, ProgressState } from '@/types';
+import type { ProgressionConfig } from '@/types';
 import progressionData from '@/content/progression.json';
-import {
-  checkTopicUnlocked,
-  checkDiagramTaskAccessible,
-  checkSectionQuizUnlocked,
-  checkCapstoneUnlocked,
-} from '@/lib/check-progression';
 
 /** Static progression config loaded from JSON */
 const config: ProgressionConfig = progressionData as ProgressionConfig;
@@ -86,21 +80,6 @@ export function ProgressDashboard() {
 
   const weakAreas = getWeakAreas();
   const dailyReview = getDailyReviewQueue();
-
-  // Reconstruct ProgressState for gating checks
-  const progressState: ProgressState = {
-    topicProgress,
-    diagramTaskProgress,
-    sectionQuizAttempts,
-    capstoneProgress,
-    flashcardProgress,
-    studyStreak,
-    lastActivityDate,
-  };
-
-  // Gating status
-  const sectionQuizUnlocked = checkSectionQuizUnlocked(progressState);
-  const capstoneUnlocked = checkCapstoneUnlocked(progressState);
 
   // Calculate overall topic completion
   const completedTopics = ALL_TOPIC_IDS.filter(
@@ -262,80 +241,56 @@ export function ProgressDashboard() {
             {ALL_TOPIC_IDS.map((topicId) => {
               const progress = topicProgress[topicId];
               const isComplete = progress?.miniQuizPassed === true;
-              const isLocked = !checkTopicUnlocked(topicId, progressState);
               return (
                 <div
                   key={topicId}
                   className={`flex items-center justify-between rounded-md border p-3 ${
                     isComplete
                       ? 'border-green-500/30 bg-green-500/5'
-                      : isLocked
-                        ? 'border-border opacity-50'
-                        : 'border-border'
+                      : 'border-border'
                   }`}
                 >
-                  {isLocked ? (
-                    <span
-                      className="truncate text-sm font-medium text-muted-foreground"
-                      title={formatTopicTitle(topicId)}
-                    >
-                      {formatTopicTitle(topicId)}
-                    </span>
-                  ) : (
-                    <Link
-                      href={`/topics/${topicId}`}
-                      className="truncate text-sm font-medium text-foreground hover:underline"
-                      title={formatTopicTitle(topicId)}
-                    >
-                      {formatTopicTitle(topicId)}
-                    </Link>
-                  )}
+                  <Link
+                    href={`/topics/${topicId}`}
+                    className="truncate text-sm font-medium text-foreground hover:underline"
+                    title={formatTopicTitle(topicId)}
+                  >
+                    {formatTopicTitle(topicId)}
+                  </Link>
                   <div className="ml-2 flex shrink-0 items-center gap-1">
-                    {isLocked ? (
-                      <span
-                        title="Locked"
-                        aria-label="Topic locked"
-                        className="text-xs text-amber-500"
-                      >
-                        🔒
-                      </span>
-                    ) : (
-                      <>
-                        <span
-                          title="Read"
-                          aria-label={`Read: ${progress?.readComplete ? 'complete' : 'incomplete'}`}
-                          className={`text-xs ${
-                            progress?.readComplete
-                              ? 'text-green-500'
-                              : 'text-muted-foreground/40'
-                          }`}
-                        >
-                          ✓R
-                        </span>
-                        <span
-                          title="Concept Chat"
-                          aria-label={`Concept chat: ${progress?.conceptChatPassed ? 'passed' : 'incomplete'}`}
-                          className={`text-xs ${
-                            progress?.conceptChatPassed
-                              ? 'text-green-500'
-                              : 'text-muted-foreground/40'
-                          }`}
-                        >
-                          ✓C
-                        </span>
-                        <span
-                          title="Mini Quiz"
-                          aria-label={`Mini quiz: ${progress?.miniQuizPassed ? 'passed' : 'incomplete'}`}
-                          className={`text-xs ${
-                            progress?.miniQuizPassed
-                              ? 'text-green-500'
-                              : 'text-muted-foreground/40'
-                          }`}
-                        >
-                          ✓Q
-                        </span>
-                      </>
-                    )}
+                    <span
+                      title="Read"
+                      aria-label={`Read: ${progress?.readComplete ? 'complete' : 'incomplete'}`}
+                      className={`text-xs ${
+                        progress?.readComplete
+                          ? 'text-green-500'
+                          : 'text-muted-foreground/40'
+                      }`}
+                    >
+                      ✓R
+                    </span>
+                    <span
+                      title="Concept Chat"
+                      aria-label={`Concept chat: ${progress?.conceptChatPassed ? 'passed' : 'incomplete'}`}
+                      className={`text-xs ${
+                        progress?.conceptChatPassed
+                          ? 'text-green-500'
+                          : 'text-muted-foreground/40'
+                      }`}
+                    >
+                      ✓C
+                    </span>
+                    <span
+                      title="Mini Quiz"
+                      aria-label={`Mini quiz: ${progress?.miniQuizPassed ? 'passed' : 'incomplete'}`}
+                      className={`text-xs ${
+                        progress?.miniQuizPassed
+                          ? 'text-green-500'
+                          : 'text-muted-foreground/40'
+                      }`}
+                    >
+                      ✓Q
+                    </span>
                   </div>
                 </div>
               );
@@ -354,36 +309,23 @@ export function ProgressDashboard() {
             {ALL_DIAGRAM_TASK_IDS.map((taskId, index) => {
               const isSubmitted =
                 diagramTaskProgress[taskId]?.submitted === true;
-              const isAccessible = checkDiagramTaskAccessible(taskId, progressState);
-              const isLocked = !isSubmitted && !isAccessible;
               return (
                 <div
                   key={taskId}
                   className={`flex items-center justify-between rounded-md border p-3 ${
                     isSubmitted
                       ? 'border-green-500/30 bg-green-500/5'
-                      : isLocked
-                        ? 'border-border opacity-50'
-                        : 'border-border'
+                      : 'border-border'
                   }`}
                 >
-                  {isLocked ? (
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Task {index + 1}
-                    </span>
-                  ) : (
-                    <Link
-                      href={`/diagrams/${taskId}`}
-                      className="text-sm font-medium text-foreground hover:underline"
-                    >
-                      Task {index + 1}
-                    </Link>
-                  )}
+                  <span className="text-sm font-medium text-foreground">
+                    Task {index + 1}
+                  </span>
                   <Badge
                     variant={isSubmitted ? 'default' : 'outline'}
                     className="text-xs"
                   >
-                    {isSubmitted ? 'Submitted' : isLocked ? '🔒 Locked' : 'Pending'}
+                    {isSubmitted ? 'Submitted' : 'Pending'}
                   </Badge>
                 </div>
               );
@@ -401,14 +343,7 @@ export function ProgressDashboard() {
           <CardTitle className="text-lg">Section Quiz</CardTitle>
         </CardHeader>
         <CardContent>
-          {!sectionQuizUnlocked ? (
-            <div className="flex items-center gap-3">
-              <span className="text-amber-500" aria-hidden="true">🔒</span>
-              <p className="text-sm text-muted-foreground">
-                Complete all topics and diagram tasks to unlock the section quiz.
-              </p>
-            </div>
-          ) : sectionQuizAttempts.length === 0 ? (
+          {sectionQuizAttempts.length === 0 ? (
             <div className="flex items-center gap-4">
               <Badge variant="outline" className="text-sm">Ready</Badge>
               <Button asChild size="sm" variant="outline">
@@ -442,50 +377,36 @@ export function ProgressDashboard() {
           <CardTitle className="text-lg">Capstone Challenges</CardTitle>
         </CardHeader>
         <CardContent>
-          {!capstoneUnlocked ? (
-            <div className="flex items-center gap-3">
-              <span className="text-amber-500" aria-hidden="true">🔒</span>
-              <p className="text-sm text-muted-foreground">
-                Pass the section quiz to unlock capstone challenges.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-              {ALL_CAPSTONE_IDS.map((challengeId, index) => {
-                const isSubmitted =
-                  capstoneProgress[challengeId]?.submitted === true;
-                const score = capstoneProgress[challengeId]?.score;
-                return (
-                  <div
-                    key={challengeId}
-                    className={`flex flex-col items-center rounded-md border p-3 ${
-                      isSubmitted
-                        ? 'border-green-500/30 bg-green-500/5'
-                        : 'border-border'
-                    }`}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {ALL_CAPSTONE_IDS.map((challengeId, index) => {
+              const isSubmitted =
+                capstoneProgress[challengeId]?.submitted === true;
+              const score = capstoneProgress[challengeId]?.score;
+              return (
+                <div
+                  key={challengeId}
+                  className={`flex flex-col items-center rounded-md border p-3 ${
+                    isSubmitted
+                      ? 'border-green-500/30 bg-green-500/5'
+                      : 'border-border'
+                  }`}
+                >
+                  <span className="text-sm font-medium text-foreground">
+                    Challenge {index + 1}
+                  </span>
+                  <Badge
+                    variant={isSubmitted ? 'default' : 'outline'}
+                    className="mt-2 text-xs"
                   >
-                    <Link
-                      href={`/capstone/${challengeId}`}
-                      className="text-sm font-medium text-foreground hover:underline"
-                    >
-                      Challenge {index + 1}
-                    </Link>
-                    <Badge
-                      variant={isSubmitted ? 'default' : 'outline'}
-                      className="mt-2 text-xs"
-                    >
-                      {isSubmitted ? `Score: ${score}` : 'Pending'}
-                    </Badge>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          {capstoneUnlocked && (
-            <p className="mt-3 text-xs text-muted-foreground">
-              {completedCapstones}/{ALL_CAPSTONE_IDS.length} completed
-            </p>
-          )}
+                    {isSubmitted ? `Score: ${score}` : 'Pending'}
+                  </Badge>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            {completedCapstones}/{ALL_CAPSTONE_IDS.length} completed
+          </p>
         </CardContent>
       </Card>
     </main>

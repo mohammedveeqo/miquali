@@ -17,19 +17,6 @@ export type {
   GlossaryEntry,
 } from './content';
 
-// Canvas types
-export type {
-  ConnectionStyle,
-  ConnectionPoint,
-  CanvasComponentDefinition,
-  ConnectionType,
-  CanvasComponentInstance,
-  CanvasConnection,
-  ValidationResult,
-  PlacementRule,
-  DiagramState,
-} from './canvas';
-
 // State types
 export type {
   TopicProgress,
@@ -39,7 +26,6 @@ export type {
   FlashcardStatus,
   StudyStreakData,
   ProgressState,
-  CanvasState,
   AIChatState,
   AnsweredQuestion,
   QuizState,
