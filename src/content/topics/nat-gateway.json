@@ -1,0 +1,29 @@
+{
+  "id": "nat-gateway",
+  "title": "NAT Gateway",
+  "sectionId": "networking",
+  "clusterId": "cluster-2",
+  "order": 4,
+  "explanation": "A NAT Gateway enables instances in private subnets to connect to the internet or other AWS services while preventing the internet from initiating connections to those instances. It is a managed, highly available service that operates within a single Availability Zone.",
+  "analogy": "A NAT Gateway is like a mail forwarding service for your private rooms — residents can send letters out, but no one outside can send unsolicited mail directly to them.",
+  "diagram": "/diagrams/nat-gateway-overview.svg",
+  "keyPoints": [
+    "NAT Gateway is AZ-scoped — deploy one per AZ for high availability",
+    "Supports up to 55,000 simultaneous connections to each unique destination",
+    "Charged per hour and per GB of data processed",
+    "Must be placed in a public subnet with an Elastic IP"
+  ],
+  "examKeywords": [
+    {
+      "term": "NAT Gateway",
+      "type": "service-reference",
+      "definition": "A managed AWS service that enables outbound internet access for resources in private subnets while blocking inbound connections.",
+      "svgDiagram": "/diagrams/mini/nat-icon.svg"
+    }
+  ],
+  "commonMistakes": [
+    "Deploying a single NAT Gateway for multi-AZ architectures — creates a single point of failure",
+    "Confusing NAT Gateway (managed) with NAT Instance (self-managed EC2)"
+  ],
+  "relatedTopics": ["subnets", "internet-gateway", "route-tables"]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "nfw-q1",
+    "topicId": "network-firewall",
+    "question": "Is AWS Network Firewall a managed or self-managed service?",
+    "options": [
+      { "id": "a", "text": "Self-managed on EC2 instances" },
+      { "id": "b", "text": "Fully managed by AWS" },
+      { "id": "c", "text": "Partially managed — you handle patching" },
+      { "id": "d", "text": "Serverless only" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "AWS Network Firewall is a fully managed service — AWS handles scaling, patching, and availability. You only configure the rules.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "nfw-q2",
+    "topicId": "network-firewall",
+    "question": "What rule format is compatible with AWS Network Firewall?",
+    "options": [
+      { "id": "a", "text": "iptables rules" },
+      { "id": "b", "text": "Suricata-compatible IPS rules" },
+      { "id": "c", "text": "Windows Firewall rules" },
+      { "id": "d", "text": "pfSense rules" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "AWS Network Firewall supports Suricata-compatible IPS rules, allowing you to use existing Suricata rule sets for intrusion prevention.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "nfw-q3",
+    "topicId": "network-firewall",
+    "question": "Where should AWS Network Firewall be deployed?",
+    "options": [
+      { "id": "a", "text": "In the same subnet as your application" },
+      { "id": "b", "text": "In a dedicated firewall subnet" },
+      { "id": "c", "text": "Outside the VPC" },
+      { "id": "d", "text": "In the default VPC only" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Network Firewall should be deployed in a dedicated firewall subnet with routing configured to direct traffic through it via Gateway Load Balancer endpoints.",
+    "difficulty": "medium"
+  }
+]

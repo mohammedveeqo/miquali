@@ -1,0 +1,29 @@
+{
+  "id": "cloudfront",
+  "title": "CloudFront",
+  "sectionId": "networking",
+  "clusterId": "cluster-5",
+  "order": 15,
+  "explanation": "Amazon CloudFront is a content delivery network (CDN) that delivers data, videos, applications, and APIs globally with low latency and high transfer speeds. It caches content at edge locations worldwide.",
+  "analogy": "CloudFront is like a chain of local libraries — instead of everyone traveling to the main library (origin), copies of popular books (content) are distributed to branches (edge locations) closer to readers.",
+  "diagram": "/diagrams/cloudfront-overview.svg",
+  "keyPoints": [
+    "Over 400 edge locations and 13 regional edge caches worldwide",
+    "Supports custom SSL certificates and HTTPS enforcement",
+    "Origin Access Control (OAC) restricts S3 access to CloudFront only",
+    "Lambda@Edge and CloudFront Functions enable edge compute"
+  ],
+  "examKeywords": [
+    {
+      "term": "CloudFront",
+      "type": "service-reference",
+      "definition": "AWS CDN service that caches and delivers content from edge locations worldwide, reducing latency for global users.",
+      "svgDiagram": "/diagrams/mini/cf-icon.svg"
+    }
+  ],
+  "commonMistakes": [
+    "Not invalidating cache after content updates — stale content persists until TTL expires",
+    "Using CloudFront for dynamic content without understanding cache behaviors"
+  ],
+  "relatedTopics": ["route-53", "elastic-load-balancing", "global-accelerator"]
+}

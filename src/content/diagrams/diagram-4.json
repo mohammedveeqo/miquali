@@ -1,0 +1,17 @@
+{
+  "id": "diagram-4",
+  "clusterId": "cluster-4",
+  "title": "Hybrid Connectivity: VPN and Direct Connect",
+  "prompt": "Design a hybrid architecture connecting an on-premises data center to AWS using both Direct Connect (primary) and Site-to-Site VPN (backup). Include a Transit Gateway for routing and show PrivateLink access to AWS services.",
+  "requiredComponents": ["vpc", "transit-gateway", "direct-connect", "vpn-gateway", "on-premises"],
+  "hints": [
+    "Show the on-premises data center connecting via Direct Connect as primary path",
+    "Add a Site-to-Site VPN as a backup connection",
+    "Use Transit Gateway to route between on-premises and multiple VPCs",
+    "Include a PrivateLink endpoint for accessing AWS services privately"
+  ],
+  "expectedConnections": [
+    { "sourceType": "on-premises", "targetType": "direct-connect", "connectionTypeId": "connected-to" },
+    { "sourceType": "on-premises", "targetType": "vpn-gateway", "connectionTypeId": "encrypted-tunnel" }
+  ]
+}

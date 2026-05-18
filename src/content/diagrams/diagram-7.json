@@ -1,0 +1,16 @@
+{
+  "id": "diagram-7",
+  "clusterId": "cluster-1",
+  "title": "VPC CIDR Planning for Multi-Environment",
+  "prompt": "Design a CIDR allocation strategy for three environments (dev, staging, production) each in their own VPC. Ensure no CIDR overlaps and plan for future VPC peering between all environments.",
+  "requiredComponents": ["vpc", "subnet", "route-table"],
+  "hints": [
+    "Use non-overlapping CIDR blocks (e.g., 10.0.0.0/16, 10.1.0.0/16, 10.2.0.0/16)",
+    "Plan subnet sizes to accommodate growth",
+    "Show that non-overlapping CIDRs enable future peering",
+    "Include at least 2 AZs per VPC for high availability"
+  ],
+  "expectedConnections": [
+    { "sourceType": "vpc", "targetType": "vpc", "connectionTypeId": "peered-with" }
+  ]
+}

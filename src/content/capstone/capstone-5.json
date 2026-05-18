@@ -1,0 +1,19 @@
+{
+  "id": "capstone-5",
+  "title": "High-Performance Computing Network Design",
+  "scenario": "A research institution needs a VPC architecture optimized for high-performance computing (HPC) workloads. The architecture must support cluster placement groups, high-bandwidth inter-node communication, and access to large datasets in S3. Researchers also need secure remote access to manage jobs.",
+  "requirements": [
+    "Cluster placement group subnet with enhanced networking",
+    "Gateway VPC endpoint for high-throughput S3 access (free, no bandwidth limit)",
+    "NAT Gateway for software package downloads from the internet",
+    "Bastion host or Systems Manager for secure researcher access",
+    "Network ACLs restricting traffic to only necessary protocols",
+    "Multi-AZ design for management plane with single-AZ for compute (placement group)"
+  ],
+  "rubricWeights": {
+    "correctness": 0.4,
+    "connectivity": 0.3,
+    "security": 0.2,
+    "bestPractices": 0.1
+  }
+}

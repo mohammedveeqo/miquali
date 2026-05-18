@@ -1,0 +1,44 @@
+[
+  {
+    "id": "nat-q1",
+    "topicId": "nat-gateway",
+    "question": "In which type of subnet must a NAT Gateway be placed?",
+    "options": [
+      { "id": "a", "text": "Private subnet" },
+      { "id": "b", "text": "Public subnet" },
+      { "id": "c", "text": "Isolated subnet" },
+      { "id": "d", "text": "Any subnet" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A NAT Gateway must be placed in a public subnet and requires an Elastic IP address to function.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "nat-q2",
+    "topicId": "nat-gateway",
+    "question": "Is a NAT Gateway AZ-scoped or Region-scoped?",
+    "options": [
+      { "id": "a", "text": "Region-scoped" },
+      { "id": "b", "text": "AZ-scoped" },
+      { "id": "c", "text": "Global" },
+      { "id": "d", "text": "Subnet-scoped" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A NAT Gateway is AZ-scoped. For high availability, you should deploy one NAT Gateway per AZ.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "nat-q3",
+    "topicId": "nat-gateway",
+    "question": "What is the primary purpose of a NAT Gateway?",
+    "options": [
+      { "id": "a", "text": "Allow inbound internet traffic to private instances" },
+      { "id": "b", "text": "Enable private subnet instances to access the internet while blocking inbound connections" },
+      { "id": "c", "text": "Provide DNS resolution for private subnets" },
+      { "id": "d", "text": "Load balance traffic across AZs" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A NAT Gateway enables instances in private subnets to initiate outbound internet connections while preventing unsolicited inbound connections from the internet.",
+    "difficulty": "easy"
+  }
+]

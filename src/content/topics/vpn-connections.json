@@ -1,0 +1,28 @@
+{
+  "id": "vpn-connections",
+  "title": "VPN Connections",
+  "sectionId": "networking",
+  "clusterId": "cluster-4",
+  "order": 10,
+  "explanation": "AWS Site-to-Site VPN creates an encrypted connection between your on-premises network and your AWS VPC over the public internet. It uses IPsec tunnels for secure communication.",
+  "analogy": "A VPN connection is like a secure, encrypted tunnel through a public highway — your data travels over the internet but is completely hidden from other traffic.",
+  "diagram": "/diagrams/vpn-connections-overview.svg",
+  "keyPoints": [
+    "Uses IPsec protocol for encryption over the public internet",
+    "Each VPN connection has two tunnels for redundancy",
+    "Requires a Virtual Private Gateway (VGW) on the AWS side and a Customer Gateway on-premises",
+    "Bandwidth limited to approximately 1.25 Gbps per tunnel"
+  ],
+  "examKeywords": [
+    {
+      "term": "Site-to-Site VPN",
+      "type": "service-reference",
+      "definition": "An encrypted IPsec connection between an on-premises network and an AWS VPC, traversing the public internet with two redundant tunnels."
+    }
+  ],
+  "commonMistakes": [
+    "Not configuring both tunnels for high availability",
+    "Choosing VPN over Direct Connect when consistent low-latency is required"
+  ],
+  "relatedTopics": ["direct-connect", "transit-gateway", "what-is-vpc"]
+}

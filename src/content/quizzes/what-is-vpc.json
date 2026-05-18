@@ -1,0 +1,114 @@
+[
+  {
+    "id": "vpc-q1",
+    "topicId": "what-is-vpc",
+    "question": "What is the maximum CIDR block size you can assign to a VPC?",
+    "options": [
+      { "id": "a", "text": "/8 (16 million addresses)" },
+      { "id": "b", "text": "/16 (65,536 addresses)" },
+      { "id": "c", "text": "/20 (4,096 addresses)" },
+      { "id": "d", "text": "/24 (256 addresses)" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The largest CIDR block you can assign to a VPC is /16, which provides 65,536 IP addresses. The smallest is /28 (16 addresses).",
+    "difficulty": "easy"
+  },
+  {
+    "id": "vpc-q2",
+    "topicId": "what-is-vpc",
+    "question": "Which statement about VPC scope is correct?",
+    "options": [
+      { "id": "a", "text": "A VPC spans a single Availability Zone" },
+      { "id": "b", "text": "A VPC spans all Regions globally" },
+      { "id": "c", "text": "A VPC spans all Availability Zones in a single Region" },
+      { "id": "d", "text": "A VPC spans two Availability Zones by default" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "A VPC is Region-scoped and spans all Availability Zones within that Region. Subnets, not VPCs, are AZ-scoped.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "vpc-q3",
+    "topicId": "what-is-vpc",
+    "question": "What is the default number of VPCs allowed per Region?",
+    "options": [
+      { "id": "a", "text": "1" },
+      { "id": "b", "text": "3" },
+      { "id": "c", "text": "5" },
+      { "id": "d", "text": "10" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "The default limit is 5 VPCs per Region. This is a soft limit that can be increased via a service quota request.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "vpc-q4",
+    "topicId": "what-is-vpc",
+    "question": "Can resources in two different VPCs communicate by default?",
+    "options": [
+      { "id": "a", "text": "Yes, all VPCs in the same Region can communicate" },
+      { "id": "b", "text": "Yes, if they share the same CIDR block" },
+      { "id": "c", "text": "No, VPCs are isolated by default and require explicit connectivity" },
+      { "id": "d", "text": "Only if they belong to the same AWS account" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "VPCs are isolated by default. To enable communication between VPCs, you must set up VPC peering, Transit Gateway, or another connectivity mechanism.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "vpc-q5",
+    "topicId": "what-is-vpc",
+    "question": "What CIDR block does the default VPC use?",
+    "options": [
+      { "id": "a", "text": "10.0.0.0/16" },
+      { "id": "b", "text": "192.168.0.0/16" },
+      { "id": "c", "text": "172.31.0.0/16" },
+      { "id": "d", "text": "172.16.0.0/16" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "AWS creates a default VPC in each Region with the CIDR block 172.31.0.0/16. It comes with public subnets, an internet gateway, and a default route table.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "vpc-q6",
+    "topicId": "what-is-vpc",
+    "question": "Why is CIDR planning important when creating a VPC?",
+    "options": [
+      { "id": "a", "text": "Because the primary CIDR block cannot be changed after creation" },
+      { "id": "b", "text": "Because AWS charges more for larger CIDR blocks" },
+      { "id": "c", "text": "Because CIDR blocks must be unique globally across all AWS accounts" },
+      { "id": "d", "text": "Because VPCs with larger CIDRs have lower performance" }
+    ],
+    "correctOptionId": "a",
+    "explanation": "The primary CIDR block of a VPC cannot be modified after creation. Overlapping CIDRs prevent VPC peering and hybrid connectivity, so planning ahead is critical.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "vpc-q7",
+    "topicId": "what-is-vpc",
+    "question": "Which feature allows you to expand the IP address range of an existing VPC?",
+    "options": [
+      { "id": "a", "text": "Modifying the primary CIDR block" },
+      { "id": "b", "text": "Adding secondary CIDR blocks" },
+      { "id": "c", "text": "Creating a new VPC and migrating resources" },
+      { "id": "d", "text": "Enabling IPv6 auto-assignment" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "You can add secondary CIDR blocks to an existing VPC to expand its IP address range. The primary CIDR cannot be changed, but additional blocks can be associated.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "vpc-q8",
+    "topicId": "what-is-vpc",
+    "question": "A company needs to connect 15 VPCs with full mesh connectivity. Which approach is most scalable?",
+    "options": [
+      { "id": "a", "text": "Create VPC peering connections between all 15 VPCs" },
+      { "id": "b", "text": "Use a Transit Gateway as a central hub" },
+      { "id": "c", "text": "Place all workloads in a single large VPC" },
+      { "id": "d", "text": "Use AWS PrivateLink between all VPCs" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Transit Gateway provides hub-and-spoke connectivity, requiring only 15 attachments instead of 105 peering connections (n*(n-1)/2). It supports transitive routing and scales much better.",
+    "difficulty": "hard"
+  }
+]

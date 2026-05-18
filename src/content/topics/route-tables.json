@@ -1,0 +1,28 @@
+{
+  "id": "route-tables",
+  "title": "Route Tables",
+  "sectionId": "networking",
+  "clusterId": "cluster-2",
+  "order": 5,
+  "explanation": "A route table contains a set of rules (routes) that determine where network traffic from your subnet or gateway is directed. Each subnet must be associated with a route table, which controls the routing for that subnet.",
+  "analogy": "Route tables are like road signs at intersections — they tell traffic which direction to go based on the destination address.",
+  "diagram": "/diagrams/route-tables-overview.svg",
+  "keyPoints": [
+    "Every subnet must be associated with exactly one route table",
+    "The main route table is automatically assigned to subnets without explicit association",
+    "Routes are evaluated using longest prefix match",
+    "Local route (VPC CIDR) is always present and cannot be removed"
+  ],
+  "examKeywords": [
+    {
+      "term": "route table",
+      "type": "architecture-term",
+      "definition": "A set of routing rules that determine where network traffic is directed based on destination IP address."
+    }
+  ],
+  "commonMistakes": [
+    "Modifying the main route table instead of creating custom route tables for specific subnets",
+    "Not understanding longest prefix match — more specific routes take priority"
+  ],
+  "relatedTopics": ["subnets", "internet-gateway", "nat-gateway", "vpc-peering"]
+}

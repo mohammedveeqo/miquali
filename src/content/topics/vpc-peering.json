@@ -1,0 +1,28 @@
+{
+  "id": "vpc-peering",
+  "title": "VPC Peering",
+  "sectionId": "networking",
+  "clusterId": "cluster-3",
+  "order": 8,
+  "explanation": "VPC peering is a networking connection between two VPCs that enables routing traffic between them using private IPv4 or IPv6 addresses. Instances in either VPC can communicate as if they are within the same network.",
+  "analogy": "VPC peering is like building a private bridge between two neighboring properties — traffic flows directly between them without going through the public road.",
+  "diagram": "/diagrams/vpc-peering-overview.svg",
+  "keyPoints": [
+    "VPC peering is non-transitive — if A peers with B and B peers with C, A cannot reach C through B",
+    "Can peer across AWS accounts and across Regions (inter-Region peering)",
+    "CIDR blocks of peered VPCs must not overlap",
+    "No single point of failure or bandwidth bottleneck"
+  ],
+  "examKeywords": [
+    {
+      "term": "VPC peering",
+      "type": "architecture-term",
+      "definition": "A one-to-one networking connection between two VPCs enabling private IP communication. Non-transitive and requires non-overlapping CIDRs."
+    }
+  ],
+  "commonMistakes": [
+    "Assuming VPC peering is transitive — it is not; each pair needs its own peering connection",
+    "Forgetting to update route tables in both VPCs after creating a peering connection"
+  ],
+  "relatedTopics": ["what-is-vpc", "transit-gateway", "route-tables"]
+}

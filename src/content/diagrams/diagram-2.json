@@ -1,0 +1,17 @@
+{
+  "id": "diagram-2",
+  "clusterId": "cluster-2",
+  "title": "NAT Gateway and Security Layers",
+  "prompt": "Extend the VPC design to include a NAT Gateway enabling private subnet instances to access the internet. Add security groups and Network ACLs to demonstrate the layered security model.",
+  "requiredComponents": ["vpc", "public-subnet", "private-subnet", "nat-gateway", "security-group", "network-acl"],
+  "hints": [
+    "Place the NAT Gateway in the public subnet",
+    "Add a route from the private subnet's route table to the NAT Gateway",
+    "Show security groups attached to instances and NACLs at subnet boundaries",
+    "Remember: security groups are stateful, NACLs are stateless"
+  ],
+  "expectedConnections": [
+    { "sourceType": "private-subnet", "targetType": "nat-gateway", "connectionTypeId": "routes-to" },
+    { "sourceType": "nat-gateway", "targetType": "internet-gateway", "connectionTypeId": "routes-to" }
+  ]
+}

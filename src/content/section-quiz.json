@@ -1,0 +1,282 @@
+[
+  {
+    "id": "sq-1",
+    "topicId": "what-is-vpc",
+    "question": "A company needs to connect 20 VPCs with full mesh connectivity. What is the most scalable solution?",
+    "options": [
+      { "id": "a", "text": "Create VPC peering between all 20 VPCs" },
+      { "id": "b", "text": "Use AWS Transit Gateway as a central hub" },
+      { "id": "c", "text": "Deploy all workloads in a single VPC" },
+      { "id": "d", "text": "Use AWS PrivateLink between all VPCs" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Transit Gateway provides hub-and-spoke connectivity requiring only 20 attachments instead of 190 peering connections. It supports transitive routing and scales efficiently.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "sq-2",
+    "topicId": "subnets",
+    "question": "An architect needs 500 IP addresses in a single subnet. What is the minimum CIDR block size?",
+    "options": [
+      { "id": "a", "text": "/24 (256 addresses)" },
+      { "id": "b", "text": "/23 (512 addresses)" },
+      { "id": "c", "text": "/22 (1024 addresses)" },
+      { "id": "d", "text": "/21 (2048 addresses)" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "A /23 provides 512 total addresses minus 5 reserved = 507 usable. However, to safely accommodate 500 with room for the reserved addresses, /22 (1019 usable) is the recommended minimum for growth.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "sq-3",
+    "topicId": "internet-gateway",
+    "question": "An EC2 instance in a public subnet cannot reach the internet. The IGW is attached and the route table has 0.0.0.0/0 → IGW. What is the most likely cause?",
+    "options": [
+      { "id": "a", "text": "The IGW bandwidth limit has been reached" },
+      { "id": "b", "text": "The instance does not have a public IPv4 address" },
+      { "id": "c", "text": "The VPC has too many subnets" },
+      { "id": "d", "text": "The IGW needs to be restarted" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "For internet access via an IGW, instances need a public IPv4 address (or Elastic IP) in addition to the route table entry. The IGW performs 1:1 NAT between private and public IPs.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-4",
+    "topicId": "nat-gateway",
+    "question": "A company has a multi-AZ architecture with a single NAT Gateway. What is the risk?",
+    "options": [
+      { "id": "a", "text": "Higher cost than necessary" },
+      { "id": "b", "text": "Single point of failure — if the NAT Gateway's AZ fails, all private subnets lose internet" },
+      { "id": "c", "text": "Bandwidth limitation" },
+      { "id": "d", "text": "Security vulnerability" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "NAT Gateways are AZ-scoped. A single NAT Gateway creates a single point of failure — if its AZ goes down, all private subnets routing through it lose internet access.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-5",
+    "topicId": "route-tables",
+    "question": "Two routes exist in a route table: 10.0.0.0/16 → local and 10.0.1.0/24 → NAT Gateway. Traffic destined for 10.0.1.5 will be routed to:",
+    "options": [
+      { "id": "a", "text": "Local (VPC)" },
+      { "id": "b", "text": "NAT Gateway" },
+      { "id": "c", "text": "Both routes are evaluated" },
+      { "id": "d", "text": "The route is ambiguous and will fail" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Routes are evaluated using longest prefix match. /24 is more specific than /16, so traffic to 10.0.1.5 matches the /24 route and goes to the NAT Gateway.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "sq-6",
+    "topicId": "security-groups",
+    "question": "A security group allows inbound SSH (port 22) from 10.0.0.0/16. Do you need an outbound rule for the SSH response traffic?",
+    "options": [
+      { "id": "a", "text": "Yes, you must explicitly allow outbound on port 22" },
+      { "id": "b", "text": "No, security groups are stateful — return traffic is automatically allowed" },
+      { "id": "c", "text": "Yes, but only for the ephemeral port range" },
+      { "id": "d", "text": "No, but only if the default outbound rule is present" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Security groups are stateful. If inbound traffic is allowed, the return (response) traffic is automatically allowed regardless of outbound rules.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-7",
+    "topicId": "network-acls",
+    "question": "A NACL has Rule 100: Allow HTTP inbound, Rule 200: Deny all inbound. What happens to HTTP traffic?",
+    "options": [
+      { "id": "a", "text": "Denied — deny rules take priority" },
+      { "id": "b", "text": "Allowed — Rule 100 is evaluated first and matches" },
+      { "id": "c", "text": "Depends on the security group" },
+      { "id": "d", "text": "Both rules apply simultaneously" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "NACL rules are evaluated in order by rule number (lowest first). Rule 100 matches HTTP traffic and allows it before Rule 200 is ever evaluated.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-8",
+    "topicId": "vpc-peering",
+    "question": "VPC A (10.0.0.0/16) peers with VPC B (10.0.0.0/16). What happens?",
+    "options": [
+      { "id": "a", "text": "Peering works but with degraded performance" },
+      { "id": "b", "text": "AWS automatically resolves the CIDR conflict" },
+      { "id": "c", "text": "The peering connection cannot be created — CIDRs overlap" },
+      { "id": "d", "text": "Only one direction of traffic works" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "VPC peering requires non-overlapping CIDR blocks. AWS will reject the peering connection if the VPCs have overlapping address ranges.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sq-9",
+    "topicId": "transit-gateway",
+    "question": "What is the key advantage of Transit Gateway over VPC peering for connecting many VPCs?",
+    "options": [
+      { "id": "a", "text": "Lower latency" },
+      { "id": "b", "text": "Transitive routing and simplified management" },
+      { "id": "c", "text": "No cost" },
+      { "id": "d", "text": "Automatic CIDR management" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Transit Gateway supports transitive routing (VPC peering does not) and simplifies management by requiring only n attachments instead of n*(n-1)/2 peering connections.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-10",
+    "topicId": "vpn-connections",
+    "question": "A company needs immediate hybrid connectivity while waiting for Direct Connect provisioning. What should they use?",
+    "options": [
+      { "id": "a", "text": "VPC peering" },
+      { "id": "b", "text": "AWS Site-to-Site VPN" },
+      { "id": "c", "text": "Transit Gateway alone" },
+      { "id": "d", "text": "PrivateLink" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Site-to-Site VPN can be provisioned in minutes over the public internet, making it ideal as an immediate solution while waiting weeks for Direct Connect.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sq-11",
+    "topicId": "direct-connect",
+    "question": "What are the two types of Virtual Interfaces (VIFs) on Direct Connect?",
+    "options": [
+      { "id": "a", "text": "Public VIF and Private VIF" },
+      { "id": "b", "text": "Standard VIF and Premium VIF" },
+      { "id": "c", "text": "Inbound VIF and Outbound VIF" },
+      { "id": "d", "text": "Primary VIF and Secondary VIF" }
+    ],
+    "correctOptionId": "a",
+    "explanation": "Direct Connect supports Private VIFs (for VPC access via private IPs) and Public VIFs (for accessing AWS public services like S3 without going over the internet).",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-12",
+    "topicId": "privatelink",
+    "question": "A company wants to access S3 from a private subnet without internet access. What are the two options?",
+    "options": [
+      { "id": "a", "text": "NAT Gateway or VPN" },
+      { "id": "b", "text": "Gateway endpoint (free) or Interface endpoint (PrivateLink)" },
+      { "id": "c", "text": "Direct Connect or Transit Gateway" },
+      { "id": "d", "text": "Internet Gateway or Egress-Only IGW" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "S3 supports both Gateway endpoints (free, route-table based) and Interface endpoints (PrivateLink, ENI-based with hourly charges). Both keep traffic off the internet.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "sq-13",
+    "topicId": "elastic-load-balancing",
+    "question": "Which load balancer type should you use for a WebSocket application with path-based routing?",
+    "options": [
+      { "id": "a", "text": "Network Load Balancer" },
+      { "id": "b", "text": "Application Load Balancer" },
+      { "id": "c", "text": "Gateway Load Balancer" },
+      { "id": "d", "text": "Classic Load Balancer" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Application Load Balancer (ALB) operates at Layer 7 and supports WebSocket connections, path-based routing, host-based routing, and content-based routing.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sq-14",
+    "topicId": "route-53",
+    "question": "A company wants to route users to the AWS Region with the lowest network latency. Which Route 53 routing policy should they use?",
+    "options": [
+      { "id": "a", "text": "Geolocation routing" },
+      { "id": "b", "text": "Weighted routing" },
+      { "id": "c", "text": "Latency-based routing" },
+      { "id": "d", "text": "Simple routing" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Latency-based routing directs users to the Region with the lowest network latency. Geolocation routing is based on geographic location, not performance.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-15",
+    "topicId": "cloudfront",
+    "question": "What is the difference between CloudFront and Global Accelerator?",
+    "options": [
+      { "id": "a", "text": "CloudFront caches content at edge; Global Accelerator optimizes the network path without caching" },
+      { "id": "b", "text": "They are the same service" },
+      { "id": "c", "text": "Global Accelerator caches; CloudFront does not" },
+      { "id": "d", "text": "CloudFront is for TCP; Global Accelerator is for HTTP" }
+    ],
+    "correctOptionId": "a",
+    "explanation": "CloudFront is a CDN that caches content at edge locations (Layer 7). Global Accelerator optimizes the network path through the AWS backbone (Layer 4) without caching.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-16",
+    "topicId": "global-accelerator",
+    "question": "What type of IP addresses does Global Accelerator provide?",
+    "options": [
+      { "id": "a", "text": "Dynamic IPs that change per request" },
+      { "id": "b", "text": "Two static anycast IP addresses" },
+      { "id": "c", "text": "One Elastic IP per endpoint" },
+      { "id": "d", "text": "IPv6 addresses only" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Global Accelerator provides two static anycast IP addresses as fixed entry points. Traffic enters the AWS network at the nearest edge location regardless of backend location.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sq-17",
+    "topicId": "vpc-endpoints",
+    "question": "Which statement about VPC Gateway endpoints is correct?",
+    "options": [
+      { "id": "a", "text": "They support all AWS services" },
+      { "id": "b", "text": "They are free and support only S3 and DynamoDB" },
+      { "id": "c", "text": "They create ENIs in your subnet" },
+      { "id": "d", "text": "They require a NAT Gateway" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Gateway endpoints are free and support only S3 and DynamoDB. They use route table entries (not ENIs) to direct traffic. Interface endpoints support 100+ services but have hourly charges.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-18",
+    "topicId": "network-firewall",
+    "question": "What is the primary use case for AWS Network Firewall over security groups and NACLs?",
+    "options": [
+      { "id": "a", "text": "It is free while security groups are not" },
+      { "id": "b", "text": "Deep packet inspection and IPS capabilities" },
+      { "id": "c", "text": "It replaces all other security controls" },
+      { "id": "d", "text": "It works across multiple VPCs automatically" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Network Firewall provides deep packet inspection, intrusion prevention (IPS), and Suricata-compatible rules — capabilities that security groups and NACLs do not offer.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "sq-19",
+    "topicId": "what-is-vpc",
+    "question": "What is the smallest CIDR block you can assign to a VPC?",
+    "options": [
+      { "id": "a", "text": "/24" },
+      { "id": "b", "text": "/28" },
+      { "id": "c", "text": "/32" },
+      { "id": "d", "text": "/16" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The smallest CIDR block for a VPC is /28 (16 IP addresses). The largest is /16 (65,536 addresses).",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sq-20",
+    "topicId": "subnets",
+    "question": "A subnet has CIDR 10.0.1.0/24. Which IP address is reserved for the VPC router?",
+    "options": [
+      { "id": "a", "text": "10.0.1.0" },
+      { "id": "b", "text": "10.0.1.1" },
+      { "id": "c", "text": "10.0.1.2" },
+      { "id": "d", "text": "10.0.1.255" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "In every subnet, .1 is reserved for the VPC router. The five reserved addresses are: .0 (network), .1 (router), .2 (DNS), .3 (future use), and .255 (broadcast).",
+    "difficulty": "medium"
+  }
+]

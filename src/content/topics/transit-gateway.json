@@ -1,0 +1,29 @@
+{
+  "id": "transit-gateway",
+  "title": "Transit Gateway",
+  "sectionId": "networking",
+  "clusterId": "cluster-3",
+  "order": 9,
+  "explanation": "AWS Transit Gateway is a network transit hub that connects VPCs and on-premises networks through a central hub. It simplifies network architecture by eliminating complex peering relationships.",
+  "analogy": "A Transit Gateway is like a central airport hub — instead of direct flights between every city pair, all routes go through the hub, simplifying connections dramatically.",
+  "diagram": "/diagrams/transit-gateway-overview.svg",
+  "keyPoints": [
+    "Acts as a regional hub connecting multiple VPCs and on-premises networks",
+    "Supports transitive routing — unlike VPC peering",
+    "Can peer with Transit Gateways in other Regions (inter-Region peering)",
+    "Supports route tables for fine-grained routing control"
+  ],
+  "examKeywords": [
+    {
+      "term": "Transit Gateway",
+      "type": "service-reference",
+      "definition": "A regional network transit hub that connects multiple VPCs and on-premises networks through a central point, supporting transitive routing.",
+      "svgDiagram": "/diagrams/mini/tgw-icon.svg"
+    }
+  ],
+  "commonMistakes": [
+    "Using VPC peering for many-to-many connectivity instead of Transit Gateway",
+    "Not understanding that Transit Gateway is Region-scoped — use inter-Region peering for cross-Region"
+  ],
+  "relatedTopics": ["vpc-peering", "what-is-vpc", "vpn-connections", "direct-connect"]
+}

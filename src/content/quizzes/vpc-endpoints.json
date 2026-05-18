@@ -1,0 +1,44 @@
+[
+  {
+    "id": "vpce-q1",
+    "topicId": "vpc-endpoints",
+    "question": "Which two AWS services support gateway endpoints?",
+    "options": [
+      { "id": "a", "text": "EC2 and Lambda" },
+      { "id": "b", "text": "S3 and DynamoDB" },
+      { "id": "c", "text": "SQS and SNS" },
+      { "id": "d", "text": "CloudWatch and CloudTrail" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Gateway endpoints support only Amazon S3 and DynamoDB. They are free and use route table entries to direct traffic. All other services use interface endpoints (PrivateLink).",
+    "difficulty": "easy"
+  },
+  {
+    "id": "vpce-q2",
+    "topicId": "vpc-endpoints",
+    "question": "What is the cost difference between gateway and interface endpoints?",
+    "options": [
+      { "id": "a", "text": "Both are free" },
+      { "id": "b", "text": "Gateway endpoints are free; interface endpoints are charged" },
+      { "id": "c", "text": "Interface endpoints are free; gateway endpoints are charged" },
+      { "id": "d", "text": "Both have the same hourly charge" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Gateway endpoints (S3/DynamoDB) are free. Interface endpoints (PrivateLink) are charged per hour and per GB of data processed.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "vpce-q3",
+    "topicId": "vpc-endpoints",
+    "question": "What controls access through a VPC endpoint?",
+    "options": [
+      { "id": "a", "text": "Security groups only" },
+      { "id": "b", "text": "Endpoint policies" },
+      { "id": "c", "text": "NACLs only" },
+      { "id": "d", "text": "IAM roles only" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Endpoint policies control which AWS resources can be accessed through the VPC endpoint. They work alongside IAM policies and security groups for defense in depth.",
+    "difficulty": "medium"
+  }
+]

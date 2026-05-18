@@ -1,0 +1,22 @@
+[
+  { "term": "CIDR block", "type": "exam-signal", "definition": "Classless Inter-Domain Routing notation specifying an IP address range. For VPCs, the primary CIDR must be between /16 and /28." },
+  { "term": "Availability Zone", "type": "exam-signal", "definition": "An isolated location within an AWS Region with independent power, cooling, and networking. Subnets are AZ-scoped." },
+  { "term": "public subnet", "type": "architecture-term", "definition": "A subnet with a route table entry directing 0.0.0.0/0 traffic to an Internet Gateway, enabling internet-facing resources." },
+  { "term": "private subnet", "type": "architecture-term", "definition": "A subnet without a direct route to an Internet Gateway. Resources access the internet only via a NAT Gateway." },
+  { "term": "network isolation", "type": "architecture-term", "definition": "The principle that resources in separate VPCs cannot communicate by default, providing a security boundary." },
+  { "term": "NAT (Network Address Translation)", "type": "exam-signal", "definition": "The process of mapping private IP addresses to public IP addresses for internet communication." },
+  { "term": "longest prefix match", "type": "exam-signal", "definition": "Route evaluation method where the most specific route matching the destination IP is selected." },
+  { "term": "stateful firewall", "type": "architecture-term", "definition": "A firewall tracking connection state — return traffic is automatically allowed if the initial request was permitted." },
+  { "term": "stateless firewall", "type": "architecture-term", "definition": "A firewall evaluating each packet independently — inbound and outbound rules must be configured separately." },
+  { "term": "transitive routing", "type": "architecture-term", "definition": "Routing where traffic can pass through intermediate nodes. Transit Gateway supports this; VPC peering does not." },
+  { "term": "IPsec", "type": "exam-signal", "definition": "Protocol suite for encrypting and authenticating IP packets, used by AWS Site-to-Site VPN connections." },
+  { "term": "hub-and-spoke", "type": "architecture-term", "definition": "Network topology where all nodes connect to a central hub rather than directly to each other. Transit Gateway pattern." },
+  { "term": "anycast", "type": "exam-signal", "definition": "Network addressing where the same IP is announced from multiple locations. Used by Global Accelerator." },
+  { "term": "edge location", "type": "exam-signal", "definition": "A CloudFront data center caching content closer to end users, reducing latency for global audiences." },
+  { "term": "deep packet inspection", "type": "architecture-term", "definition": "Examining the data payload of network packets (not just headers) for security threats. AWS Network Firewall capability." },
+  { "term": "micro-segmentation", "type": "architecture-term", "definition": "Security approach using fine-grained policies (e.g., per-workload security groups) instead of broad network zones." },
+  { "term": "defense in depth", "type": "architecture-term", "definition": "Layered security approach using multiple controls (security groups + NACLs + Network Firewall) at different levels." },
+  { "term": "Elastic IP", "type": "service-reference", "definition": "A static public IPv4 address that persists across instance stop/start cycles. Required for NAT Gateways.", "svgDiagram": "/diagrams/mini/eip-icon.svg" },
+  { "term": "ENI (Elastic Network Interface)", "type": "service-reference", "definition": "A virtual network card attached to an instance. Security groups and PrivateLink endpoints operate at ENI level." },
+  { "term": "VIF (Virtual Interface)", "type": "exam-signal", "definition": "A logical interface on a Direct Connect connection. Private VIF for VPC access, Public VIF for AWS public services." }
+]

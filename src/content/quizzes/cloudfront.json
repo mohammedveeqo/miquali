@@ -1,0 +1,44 @@
+[
+  {
+    "id": "cf-q1",
+    "topicId": "cloudfront",
+    "question": "What is the primary purpose of CloudFront?",
+    "options": [
+      { "id": "a", "text": "Database caching" },
+      { "id": "b", "text": "Content delivery via edge locations worldwide" },
+      { "id": "c", "text": "Load balancing across Regions" },
+      { "id": "d", "text": "DNS resolution" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "CloudFront is a CDN that caches and delivers content from edge locations worldwide, reducing latency for global users by serving content from the nearest edge location.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "cf-q2",
+    "topicId": "cloudfront",
+    "question": "What does Origin Access Control (OAC) do?",
+    "options": [
+      { "id": "a", "text": "Controls which users can access CloudFront" },
+      { "id": "b", "text": "Restricts S3 bucket access to CloudFront only" },
+      { "id": "c", "text": "Manages CloudFront access logs" },
+      { "id": "d", "text": "Controls origin failover behavior" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Origin Access Control (OAC) restricts access to your S3 bucket so that content can only be accessed through CloudFront, not directly from S3.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "cf-q3",
+    "topicId": "cloudfront",
+    "question": "What happens if you update content in S3 but do not invalidate the CloudFront cache?",
+    "options": [
+      { "id": "a", "text": "CloudFront immediately serves the new content" },
+      { "id": "b", "text": "Stale content persists until the TTL expires" },
+      { "id": "c", "text": "CloudFront returns a 404 error" },
+      { "id": "d", "text": "The distribution is automatically disabled" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Without cache invalidation, CloudFront continues serving the cached (stale) version until the TTL expires. You must explicitly invalidate or use versioned file names.",
+    "difficulty": "medium"
+  }
+]

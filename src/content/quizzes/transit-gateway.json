@@ -1,0 +1,44 @@
+[
+  {
+    "id": "tgw-q1",
+    "topicId": "transit-gateway",
+    "question": "Does Transit Gateway support transitive routing?",
+    "options": [
+      { "id": "a", "text": "No, like VPC peering it is non-transitive" },
+      { "id": "b", "text": "Yes, it acts as a hub enabling transitive routing" },
+      { "id": "c", "text": "Only for on-premises connections" },
+      { "id": "d", "text": "Only within the same account" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Transit Gateway supports transitive routing — all attached VPCs and networks can communicate through the central hub without individual peering connections.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "tgw-q2",
+    "topicId": "transit-gateway",
+    "question": "Is Transit Gateway Region-scoped or global?",
+    "options": [
+      { "id": "a", "text": "Global — one TGW serves all Regions" },
+      { "id": "b", "text": "Region-scoped, but supports inter-Region peering" },
+      { "id": "c", "text": "AZ-scoped" },
+      { "id": "d", "text": "Account-scoped" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Transit Gateway is Region-scoped. For cross-Region connectivity, you can use Transit Gateway inter-Region peering between TGWs in different Regions.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "tgw-q3",
+    "topicId": "transit-gateway",
+    "question": "When should you use Transit Gateway instead of VPC peering?",
+    "options": [
+      { "id": "a", "text": "When connecting exactly two VPCs" },
+      { "id": "b", "text": "When you need many-to-many VPC connectivity at scale" },
+      { "id": "c", "text": "When you need the lowest possible latency" },
+      { "id": "d", "text": "When VPCs are in different accounts" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Transit Gateway is ideal for many-to-many connectivity. VPC peering requires n*(n-1)/2 connections for full mesh, while TGW needs only n attachments.",
+    "difficulty": "medium"
+  }
+]

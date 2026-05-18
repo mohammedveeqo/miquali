@@ -1,0 +1,44 @@
+[
+  {
+    "id": "vpn-q1",
+    "topicId": "vpn-connections",
+    "question": "What protocol does AWS Site-to-Site VPN use for encryption?",
+    "options": [
+      { "id": "a", "text": "SSL/TLS" },
+      { "id": "b", "text": "IPsec" },
+      { "id": "c", "text": "SSH" },
+      { "id": "d", "text": "WireGuard" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "AWS Site-to-Site VPN uses the IPsec protocol to create encrypted tunnels over the public internet.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "vpn-q2",
+    "topicId": "vpn-connections",
+    "question": "How many tunnels does each VPN connection have?",
+    "options": [
+      { "id": "a", "text": "One" },
+      { "id": "b", "text": "Two" },
+      { "id": "c", "text": "Three" },
+      { "id": "d", "text": "Depends on the configuration" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Each AWS Site-to-Site VPN connection has two tunnels for redundancy. Both should be configured for high availability.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "vpn-q3",
+    "topicId": "vpn-connections",
+    "question": "What is the approximate bandwidth limit per VPN tunnel?",
+    "options": [
+      { "id": "a", "text": "100 Mbps" },
+      { "id": "b", "text": "500 Mbps" },
+      { "id": "c", "text": "1.25 Gbps" },
+      { "id": "d", "text": "10 Gbps" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Each VPN tunnel supports approximately 1.25 Gbps of bandwidth. For higher throughput, consider Direct Connect or multiple VPN connections with ECMP.",
+    "difficulty": "medium"
+  }
+]

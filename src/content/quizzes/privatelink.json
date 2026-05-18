@@ -1,0 +1,44 @@
+[
+  {
+    "id": "pl-q1",
+    "topicId": "privatelink",
+    "question": "Does PrivateLink traffic traverse the public internet?",
+    "options": [
+      { "id": "a", "text": "Yes, but it is encrypted" },
+      { "id": "b", "text": "No, traffic stays on the AWS network" },
+      { "id": "c", "text": "Only for cross-Region connections" },
+      { "id": "d", "text": "Depends on the service" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "PrivateLink keeps all traffic on the AWS network — it never traverses the public internet, providing enhanced security and consistent performance.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "pl-q2",
+    "topicId": "privatelink",
+    "question": "What type of endpoint does PrivateLink create in your VPC?",
+    "options": [
+      { "id": "a", "text": "Gateway endpoint with route table entries" },
+      { "id": "b", "text": "Interface endpoint (ENI in your subnet)" },
+      { "id": "c", "text": "Virtual private gateway" },
+      { "id": "d", "text": "NAT endpoint" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "PrivateLink uses interface VPC endpoints, which create Elastic Network Interfaces (ENIs) in your subnet with private IP addresses.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "pl-q3",
+    "topicId": "privatelink",
+    "question": "What connectivity is NOT needed when using PrivateLink?",
+    "options": [
+      { "id": "a", "text": "Security groups" },
+      { "id": "b", "text": "Internet Gateway, NAT, VPN, or Direct Connect" },
+      { "id": "c", "text": "Route tables" },
+      { "id": "d", "text": "Subnets" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "With PrivateLink, you do not need an Internet Gateway, NAT device, VPN connection, or Direct Connect to access the connected service — the ENI provides direct private access.",
+    "difficulty": "medium"
+  }
+]

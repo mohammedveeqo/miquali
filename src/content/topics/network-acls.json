@@ -1,0 +1,28 @@
+{
+  "id": "network-acls",
+  "title": "Network ACLs",
+  "sectionId": "networking",
+  "clusterId": "cluster-3",
+  "order": 7,
+  "explanation": "Network Access Control Lists (NACLs) are stateless firewalls that operate at the subnet level. They evaluate rules in order (by rule number) and apply to all traffic entering or leaving the subnet.",
+  "analogy": "NACLs are like a security checkpoint at the entrance to a neighborhood — every vehicle (packet) is checked both entering and leaving, regardless of whether it was already checked before.",
+  "diagram": "/diagrams/network-acls-overview.svg",
+  "keyPoints": [
+    "NACLs are stateless — inbound and outbound rules are evaluated independently",
+    "Rules are evaluated in order by rule number (lowest first)",
+    "NACLs support both allow and deny rules",
+    "Each subnet is associated with exactly one NACL"
+  ],
+  "examKeywords": [
+    {
+      "term": "Network ACL",
+      "type": "architecture-term",
+      "definition": "A stateless firewall at the subnet level that evaluates numbered rules in order for both inbound and outbound traffic."
+    }
+  ],
+  "commonMistakes": [
+    "Forgetting NACLs are stateless — you must explicitly allow return traffic",
+    "Not understanding rule evaluation order — lower numbers are evaluated first"
+  ],
+  "relatedTopics": ["security-groups", "subnets", "what-is-vpc"]
+}

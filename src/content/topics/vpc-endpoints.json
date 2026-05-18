@@ -1,0 +1,28 @@
+{
+  "id": "vpc-endpoints",
+  "title": "VPC Endpoints",
+  "sectionId": "networking",
+  "clusterId": "cluster-6",
+  "order": 17,
+  "explanation": "VPC endpoints enable private connections between your VPC and supported AWS services without requiring an internet gateway, NAT device, VPN, or Direct Connect. There are two types: interface endpoints and gateway endpoints.",
+  "analogy": "VPC endpoints are like internal mail slots — you can send packages to AWS services through a private slot in your wall without going outside to the mailbox.",
+  "diagram": "/diagrams/vpc-endpoints-overview.svg",
+  "keyPoints": [
+    "Gateway endpoints: free, support S3 and DynamoDB only, use route table entries",
+    "Interface endpoints: use PrivateLink, create ENIs in your subnet, support 100+ services",
+    "Traffic never leaves the AWS network",
+    "Endpoint policies control which resources can be accessed"
+  ],
+  "examKeywords": [
+    {
+      "term": "VPC endpoint",
+      "type": "architecture-term",
+      "definition": "A private connection between a VPC and AWS services that does not require internet access. Gateway type (S3/DynamoDB) or Interface type (PrivateLink)."
+    }
+  ],
+  "commonMistakes": [
+    "Using a NAT Gateway to access S3 when a free Gateway endpoint would suffice",
+    "Confusing gateway endpoints (route table based, free) with interface endpoints (ENI based, charged)"
+  ],
+  "relatedTopics": ["privatelink", "nat-gateway", "what-is-vpc"]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "dx-q1",
+    "topicId": "direct-connect",
+    "question": "Does Direct Connect traffic traverse the public internet?",
+    "options": [
+      { "id": "a", "text": "Yes, but it is encrypted" },
+      { "id": "b", "text": "No, it uses a dedicated private connection" },
+      { "id": "c", "text": "Only for the last mile" },
+      { "id": "d", "text": "Depends on the VIF type" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Direct Connect establishes a dedicated private network connection that bypasses the public internet entirely, providing more consistent network performance.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "dx-q2",
+    "topicId": "direct-connect",
+    "question": "What are the dedicated connection speed options for Direct Connect?",
+    "options": [
+      { "id": "a", "text": "100 Mbps and 500 Mbps" },
+      { "id": "b", "text": "1 Gbps and 10 Gbps" },
+      { "id": "c", "text": "5 Gbps and 25 Gbps" },
+      { "id": "d", "text": "10 Gbps and 100 Gbps" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Dedicated Direct Connect connections are available at 1 Gbps and 10 Gbps. Hosted connections are available at lower speeds (50 Mbps to 10 Gbps).",
+    "difficulty": "medium"
+  },
+  {
+    "id": "dx-q3",
+    "topicId": "direct-connect",
+    "question": "How long does it typically take to provision a Direct Connect connection?",
+    "options": [
+      { "id": "a", "text": "Minutes" },
+      { "id": "b", "text": "Hours" },
+      { "id": "c", "text": "Days to weeks" },
+      { "id": "d", "text": "Months" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Direct Connect takes days to weeks to provision because it involves physical cross-connect installation at a colocation facility. It is not suitable for urgent connectivity needs.",
+    "difficulty": "easy"
+  }
+]

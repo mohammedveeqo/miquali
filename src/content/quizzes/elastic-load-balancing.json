@@ -1,0 +1,44 @@
+[
+  {
+    "id": "elb-q1",
+    "topicId": "elastic-load-balancing",
+    "question": "At which OSI layer does an Application Load Balancer operate?",
+    "options": [
+      { "id": "a", "text": "Layer 3 (Network)" },
+      { "id": "b", "text": "Layer 4 (Transport)" },
+      { "id": "c", "text": "Layer 7 (Application)" },
+      { "id": "d", "text": "Layer 2 (Data Link)" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "An Application Load Balancer (ALB) operates at Layer 7 (Application layer), supporting HTTP/HTTPS with content-based, host-based, and path-based routing.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "elb-q2",
+    "topicId": "elastic-load-balancing",
+    "question": "Which ELB type provides ultra-low latency for TCP/UDP traffic?",
+    "options": [
+      { "id": "a", "text": "Application Load Balancer" },
+      { "id": "b", "text": "Network Load Balancer" },
+      { "id": "c", "text": "Gateway Load Balancer" },
+      { "id": "d", "text": "Classic Load Balancer" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Network Load Balancer (NLB) operates at Layer 4 and is designed for ultra-low latency TCP/UDP traffic, capable of handling millions of requests per second.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "elb-q3",
+    "topicId": "elastic-load-balancing",
+    "question": "What is the purpose of a Gateway Load Balancer?",
+    "options": [
+      { "id": "a", "text": "Load balance traffic to API Gateway" },
+      { "id": "b", "text": "Route traffic through third-party virtual appliances" },
+      { "id": "c", "text": "Balance traffic between VPCs" },
+      { "id": "d", "text": "Provide a gateway to the internet" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Gateway Load Balancer (GWLB) operates at Layer 3 and is designed to deploy, scale, and manage third-party virtual appliances like firewalls and IDS/IPS systems.",
+    "difficulty": "medium"
+  }
+]

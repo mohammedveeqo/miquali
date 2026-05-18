@@ -1,0 +1,48 @@
+{
+  "sections": [
+    {
+      "id": "networking",
+      "name": "Networking",
+      "clusters": [
+        {
+          "id": "cluster-1",
+          "topicIds": ["what-is-vpc", "subnets", "internet-gateway"],
+          "diagramTaskId": "diagram-1"
+        },
+        {
+          "id": "cluster-2",
+          "topicIds": ["nat-gateway", "route-tables", "security-groups"],
+          "diagramTaskId": "diagram-2"
+        },
+        {
+          "id": "cluster-3",
+          "topicIds": ["network-acls", "vpc-peering", "transit-gateway"],
+          "diagramTaskId": "diagram-3"
+        },
+        {
+          "id": "cluster-4",
+          "topicIds": ["vpn-connections", "direct-connect", "privatelink"],
+          "diagramTaskId": "diagram-4"
+        },
+        {
+          "id": "cluster-5",
+          "topicIds": ["elastic-load-balancing", "route-53", "cloudfront"],
+          "diagramTaskId": "diagram-5"
+        },
+        {
+          "id": "cluster-6",
+          "topicIds": ["global-accelerator", "vpc-endpoints", "network-firewall"],
+          "diagramTaskId": "diagram-6"
+        }
+      ],
+      "sectionQuizId": "section-quiz-networking",
+      "capstoneIds": [
+        "capstone-1",
+        "capstone-2",
+        "capstone-3",
+        "capstone-4",
+        "capstone-5"
+      ]
+    }
+  ]
+}

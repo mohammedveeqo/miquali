@@ -1,0 +1,28 @@
+{
+  "id": "privatelink",
+  "title": "AWS PrivateLink",
+  "sectionId": "networking",
+  "clusterId": "cluster-4",
+  "order": 12,
+  "explanation": "AWS PrivateLink provides private connectivity between VPCs, supported AWS services, and your on-premises networks without exposing traffic to the public internet. It creates an elastic network interface in your subnet.",
+  "analogy": "PrivateLink is like a private delivery tunnel between buildings — packages (data) travel directly without ever going through the public street.",
+  "diagram": "/diagrams/privatelink-overview.svg",
+  "keyPoints": [
+    "Traffic stays on the AWS network — never traverses the public internet",
+    "Uses interface VPC endpoints (ENIs in your subnet)",
+    "Supports access to AWS services and third-party SaaS via AWS Marketplace",
+    "No need for IGW, NAT, VPN, or Direct Connect for the connected service"
+  ],
+  "examKeywords": [
+    {
+      "term": "PrivateLink",
+      "type": "service-reference",
+      "definition": "A technology providing private connectivity between VPCs and services using interface endpoints (ENIs), keeping traffic off the public internet."
+    }
+  ],
+  "commonMistakes": [
+    "Confusing PrivateLink (interface endpoints) with Gateway endpoints (S3/DynamoDB only)",
+    "Not understanding that PrivateLink endpoints are AZ-scoped"
+  ],
+  "relatedTopics": ["vpc-endpoints", "what-is-vpc", "direct-connect"]
+}

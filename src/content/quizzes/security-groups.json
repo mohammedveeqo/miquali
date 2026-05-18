@@ -1,0 +1,44 @@
+[
+  {
+    "id": "sg-q1",
+    "topicId": "security-groups",
+    "question": "Are security groups stateful or stateless?",
+    "options": [
+      { "id": "a", "text": "Stateless" },
+      { "id": "b", "text": "Stateful" },
+      { "id": "c", "text": "Depends on the rule type" },
+      { "id": "d", "text": "Stateful for inbound, stateless for outbound" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Security groups are stateful — if you allow inbound traffic, the return traffic is automatically allowed regardless of outbound rules.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sg-q2",
+    "topicId": "security-groups",
+    "question": "Can security groups have deny rules?",
+    "options": [
+      { "id": "a", "text": "Yes, both allow and deny" },
+      { "id": "b", "text": "No, only allow rules" },
+      { "id": "c", "text": "Only deny rules for inbound" },
+      { "id": "d", "text": "Yes, but only for specific ports" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Security groups only support allow rules. Everything not explicitly allowed is denied by default. Use NACLs if you need explicit deny rules.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "sg-q3",
+    "topicId": "security-groups",
+    "question": "At what level do security groups operate?",
+    "options": [
+      { "id": "a", "text": "Subnet level" },
+      { "id": "b", "text": "VPC level" },
+      { "id": "c", "text": "Instance (ENI) level" },
+      { "id": "d", "text": "Region level" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Security groups operate at the instance level, specifically at the Elastic Network Interface (ENI) level. Each ENI can have multiple security groups.",
+    "difficulty": "medium"
+  }
+]

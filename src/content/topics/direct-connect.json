@@ -1,0 +1,29 @@
+{
+  "id": "direct-connect",
+  "title": "Direct Connect",
+  "sectionId": "networking",
+  "clusterId": "cluster-4",
+  "order": 11,
+  "explanation": "AWS Direct Connect establishes a dedicated private network connection from your on-premises data center to AWS. It bypasses the public internet, providing more consistent network performance and reduced bandwidth costs.",
+  "analogy": "Direct Connect is like having a private road built directly from your house to the office — no traffic lights, no other cars, just a dedicated lane for your use.",
+  "diagram": "/diagrams/direct-connect-overview.svg",
+  "keyPoints": [
+    "Provides dedicated 1 Gbps or 10 Gbps connections (or hosted connections at lower speeds)",
+    "Bypasses the public internet for more consistent latency",
+    "Supports both private VIF (VPC access) and public VIF (AWS public services)",
+    "Takes weeks to provision — not suitable for urgent connectivity needs"
+  ],
+  "examKeywords": [
+    {
+      "term": "Direct Connect",
+      "type": "service-reference",
+      "definition": "A dedicated private network connection from on-premises to AWS, bypassing the public internet for consistent performance and reduced data transfer costs.",
+      "svgDiagram": "/diagrams/mini/dx-icon.svg"
+    }
+  ],
+  "commonMistakes": [
+    "Not planning for the weeks-long provisioning time of Direct Connect",
+    "Forgetting to set up a VPN as backup for Direct Connect failover"
+  ],
+  "relatedTopics": ["vpn-connections", "transit-gateway", "vpc-endpoints"]
+}

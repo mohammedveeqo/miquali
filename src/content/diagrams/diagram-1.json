@@ -1,0 +1,17 @@
+{
+  "id": "diagram-1",
+  "clusterId": "cluster-1",
+  "title": "Basic VPC with Public and Private Subnets",
+  "prompt": "Design a VPC architecture with public and private subnets across two Availability Zones. Include an Internet Gateway for public subnet internet access. Show how instances in public subnets can communicate with the internet.",
+  "requiredComponents": ["vpc", "public-subnet", "private-subnet", "internet-gateway", "route-table"],
+  "hints": [
+    "Start by placing a VPC as the outer container",
+    "Create at least one public and one private subnet in different AZs",
+    "Attach an Internet Gateway to the VPC",
+    "Connect the public subnet's route table to the Internet Gateway with a 0.0.0.0/0 route"
+  ],
+  "expectedConnections": [
+    { "sourceType": "route-table", "targetType": "internet-gateway", "connectionTypeId": "routes-to" },
+    { "sourceType": "public-subnet", "targetType": "route-table", "connectionTypeId": "associated-with" }
+  ]
+}

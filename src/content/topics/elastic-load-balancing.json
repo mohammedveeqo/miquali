@@ -1,0 +1,29 @@
+{
+  "id": "elastic-load-balancing",
+  "title": "Elastic Load Balancing",
+  "sectionId": "networking",
+  "clusterId": "cluster-5",
+  "order": 13,
+  "explanation": "Elastic Load Balancing (ELB) automatically distributes incoming application traffic across multiple targets such as EC2 instances, containers, and IP addresses. AWS offers three types: Application Load Balancer (ALB), Network Load Balancer (NLB), and Gateway Load Balancer (GWLB).",
+  "analogy": "A load balancer is like a restaurant host who seats guests (requests) at different tables (servers) to ensure no single table is overwhelmed while others sit empty.",
+  "diagram": "/diagrams/elb-overview.svg",
+  "keyPoints": [
+    "ALB operates at Layer 7 (HTTP/HTTPS) with content-based routing",
+    "NLB operates at Layer 4 (TCP/UDP) with ultra-low latency",
+    "GWLB operates at Layer 3 for third-party virtual appliances",
+    "All ELB types support cross-zone load balancing and health checks"
+  ],
+  "examKeywords": [
+    {
+      "term": "Application Load Balancer",
+      "type": "service-reference",
+      "definition": "A Layer 7 load balancer supporting content-based routing, host-based routing, path-based routing, and WebSocket connections.",
+      "svgDiagram": "/diagrams/mini/alb-icon.svg"
+    }
+  ],
+  "commonMistakes": [
+    "Using ALB when ultra-low latency is required — NLB is better for TCP/UDP performance",
+    "Not enabling cross-zone load balancing, leading to uneven traffic distribution"
+  ],
+  "relatedTopics": ["subnets", "security-groups", "route-53"]
+}

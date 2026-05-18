@@ -1,0 +1,114 @@
+[
+  {
+    "id": "subnets-q1",
+    "topicId": "subnets",
+    "question": "How many IP addresses does AWS reserve in each subnet?",
+    "options": [
+      { "id": "a", "text": "2" },
+      { "id": "b", "text": "3" },
+      { "id": "c", "text": "5" },
+      { "id": "d", "text": "8" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "AWS reserves 5 IP addresses in each subnet: the network address (.0), VPC router (.1), DNS server (.2), reserved for future use (.3), and broadcast address (.255).",
+    "difficulty": "easy"
+  },
+  {
+    "id": "subnets-q2",
+    "topicId": "subnets",
+    "question": "Can a subnet span multiple Availability Zones?",
+    "options": [
+      { "id": "a", "text": "Yes, subnets always span all AZs in a Region" },
+      { "id": "b", "text": "Yes, but only across two AZs" },
+      { "id": "c", "text": "No, a subnet exists in exactly one Availability Zone" },
+      { "id": "d", "text": "Only if the VPC has multi-AZ enabled" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "A subnet must reside entirely within one Availability Zone and cannot span zones. This is a fundamental constraint of VPC networking.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "subnets-q3",
+    "topicId": "subnets",
+    "question": "What makes a subnet 'public'?",
+    "options": [
+      { "id": "a", "text": "It has instances with public IP addresses" },
+      { "id": "b", "text": "Its route table has a 0.0.0.0/0 route to an Internet Gateway" },
+      { "id": "c", "text": "It is in the default VPC" },
+      { "id": "d", "text": "It has a Network ACL allowing all traffic" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A subnet is public if its associated route table has a route directing 0.0.0.0/0 traffic to an Internet Gateway. Public IPs on instances are also needed for actual internet access, but the route table determines the subnet classification.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "subnets-q4",
+    "topicId": "subnets",
+    "question": "How many usable IP addresses are in a /24 subnet?",
+    "options": [
+      { "id": "a", "text": "256" },
+      { "id": "b", "text": "254" },
+      { "id": "c", "text": "251" },
+      { "id": "d", "text": "250" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "A /24 subnet has 256 total addresses. AWS reserves 5, leaving 251 usable IP addresses for your resources.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "subnets-q5",
+    "topicId": "subnets",
+    "question": "What is the best practice for subnet design in a production VPC?",
+    "options": [
+      { "id": "a", "text": "Create one large subnet per VPC" },
+      { "id": "b", "text": "Create public and private subnets in at least 2 AZs" },
+      { "id": "c", "text": "Use only private subnets and access everything via VPN" },
+      { "id": "d", "text": "Create subnets only when you need to launch instances" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Best practice is to create at least one public and one private subnet in each AZ you use (minimum 2 AZs). This enables high availability and proper network segmentation.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "subnets-q6",
+    "topicId": "subnets",
+    "question": "What happens if two subnets in the same VPC have overlapping CIDR blocks?",
+    "options": [
+      { "id": "a", "text": "AWS automatically resolves the overlap" },
+      { "id": "b", "text": "Traffic is load-balanced between the two subnets" },
+      { "id": "c", "text": "AWS prevents creation — subnet CIDRs cannot overlap within a VPC" },
+      { "id": "d", "text": "The newer subnet takes priority" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Subnet CIDR blocks cannot overlap within the same VPC. AWS will reject the creation of a subnet with a CIDR that overlaps an existing subnet.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "subnets-q7",
+    "topicId": "subnets",
+    "question": "What is an isolated subnet?",
+    "options": [
+      { "id": "a", "text": "A subnet in a Region with only one AZ" },
+      { "id": "b", "text": "A subnet with no route to the internet at all (no IGW, no NAT)" },
+      { "id": "c", "text": "A subnet that only allows traffic from the same VPC" },
+      { "id": "d", "text": "A subnet dedicated to a single AWS service" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "An isolated subnet has no route to the internet — no Internet Gateway and no NAT Gateway. It is used for databases and sensitive workloads that should never communicate with the internet.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "subnets-q8",
+    "topicId": "subnets",
+    "question": "Which AWS-reserved IP address in a subnet is used for the DNS server?",
+    "options": [
+      { "id": "a", "text": ".0 (network address)" },
+      { "id": "b", "text": ".1 (VPC router)" },
+      { "id": "c", "text": ".2 (DNS server)" },
+      { "id": "d", "text": ".3 (reserved for future use)" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "The .2 address in each subnet is reserved for the Amazon-provided DNS server (also known as the VPC DNS resolver or AmazonProvidedDNS).",
+    "difficulty": "hard"
+  }
+]

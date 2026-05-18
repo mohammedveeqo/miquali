@@ -1,0 +1,28 @@
+{
+  "id": "security-groups",
+  "title": "Security Groups",
+  "sectionId": "networking",
+  "clusterId": "cluster-2",
+  "order": 6,
+  "explanation": "Security groups act as virtual firewalls for your instances, controlling inbound and outbound traffic at the instance level. They are stateful — if you allow inbound traffic, the response is automatically allowed outbound.",
+  "analogy": "Security groups are like bouncers at a club — they check every person (packet) against the guest list (rules) before allowing entry or exit.",
+  "diagram": "/diagrams/security-groups-overview.svg",
+  "keyPoints": [
+    "Security groups are stateful — return traffic is automatically allowed",
+    "Default: all inbound denied, all outbound allowed",
+    "You can only specify allow rules, not deny rules",
+    "Security groups are associated with ENIs (network interfaces)"
+  ],
+  "examKeywords": [
+    {
+      "term": "security group",
+      "type": "architecture-term",
+      "definition": "A stateful virtual firewall controlling inbound and outbound traffic at the instance (ENI) level. Supports allow rules only."
+    }
+  ],
+  "commonMistakes": [
+    "Confusing security groups (stateful, instance-level) with NACLs (stateless, subnet-level)",
+    "Not understanding that security groups can reference other security groups as sources"
+  ],
+  "relatedTopics": ["network-acls", "subnets", "what-is-vpc"]
+}

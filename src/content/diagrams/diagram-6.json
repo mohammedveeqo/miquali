@@ -1,0 +1,17 @@
+{
+  "id": "diagram-6",
+  "clusterId": "cluster-6",
+  "title": "Secure VPC with Endpoints and Firewall",
+  "prompt": "Design a secure VPC architecture using VPC endpoints for AWS service access, Global Accelerator for performance, and AWS Network Firewall for traffic inspection. Show how traffic flows through the firewall before reaching application subnets.",
+  "requiredComponents": ["vpc", "network-firewall", "vpc-endpoint", "global-accelerator", "subnet"],
+  "hints": [
+    "Place Network Firewall in a dedicated firewall subnet",
+    "Route ingress traffic through the firewall before reaching application subnets",
+    "Add VPC endpoints for S3 and DynamoDB access without internet",
+    "Show Global Accelerator providing static IPs at the edge"
+  ],
+  "expectedConnections": [
+    { "sourceType": "global-accelerator", "targetType": "network-firewall", "connectionTypeId": "forwards-to" },
+    { "sourceType": "network-firewall", "targetType": "subnet", "connectionTypeId": "forwards-to" }
+  ]
+}

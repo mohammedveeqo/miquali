@@ -1,0 +1,17 @@
+{
+  "id": "diagram-5",
+  "clusterId": "cluster-5",
+  "title": "Global Content Delivery Architecture",
+  "prompt": "Design a globally distributed architecture using CloudFront, Route 53, and Elastic Load Balancing. Show how DNS routes users to the nearest edge location, and how the ALB distributes traffic to backend instances across AZs.",
+  "requiredComponents": ["route-53", "cloudfront", "alb", "ec2", "s3"],
+  "hints": [
+    "Start with Route 53 as the DNS entry point",
+    "Connect Route 53 to CloudFront for static content delivery",
+    "Show CloudFront connecting to an ALB origin for dynamic content",
+    "Place EC2 instances behind the ALB in multiple AZs"
+  ],
+  "expectedConnections": [
+    { "sourceType": "route-53", "targetType": "cloudfront", "connectionTypeId": "routes-to" },
+    { "sourceType": "cloudfront", "targetType": "alb", "connectionTypeId": "forwards-to" }
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "r53-q1",
+    "topicId": "route-53",
+    "question": "What is the availability SLA for Route 53 DNS queries?",
+    "options": [
+      { "id": "a", "text": "99.9%" },
+      { "id": "b", "text": "99.99%" },
+      { "id": "c", "text": "100%" },
+      { "id": "d", "text": "99.95%" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Route 53 offers a 100% availability SLA for DNS queries, making it one of the most reliable DNS services available.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "r53-q2",
+    "topicId": "route-53",
+    "question": "What is an alias record in Route 53?",
+    "options": [
+      { "id": "a", "text": "A CNAME record with a different name" },
+      { "id": "b", "text": "A Route 53-specific record that maps to AWS resources without additional query charges" },
+      { "id": "c", "text": "A record that aliases one domain to another" },
+      { "id": "d", "text": "A PTR record for reverse DNS" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Alias records are Route 53-specific extensions that map directly to AWS resources (ELB, CloudFront, S3) without additional charges for DNS queries.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "r53-q3",
+    "topicId": "route-53",
+    "question": "Which routing policy directs traffic based on the user's geographic location?",
+    "options": [
+      { "id": "a", "text": "Latency-based routing" },
+      { "id": "b", "text": "Weighted routing" },
+      { "id": "c", "text": "Geolocation routing" },
+      { "id": "d", "text": "Simple routing" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Geolocation routing directs traffic based on the geographic location of the user. It is used for content localization and compliance requirements.",
+    "difficulty": "easy"
+  }
+]

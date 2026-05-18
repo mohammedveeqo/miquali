@@ -1,0 +1,19 @@
+{
+  "id": "capstone-2",
+  "title": "Hybrid Cloud with On-Premises Integration",
+  "scenario": "A healthcare company is migrating to AWS but must maintain connectivity to their on-premises data center for compliance reasons. They need a hybrid architecture with Direct Connect as the primary path and VPN as backup. Sensitive patient data must never traverse the public internet. Design the complete networking architecture.",
+  "requirements": [
+    "Direct Connect with private VIF as primary connectivity",
+    "Site-to-Site VPN as backup with automatic failover",
+    "Transit Gateway connecting multiple VPCs to on-premises",
+    "VPC endpoints for AWS service access without internet",
+    "Network segmentation between production and development VPCs",
+    "AWS Network Firewall for traffic inspection between environments"
+  ],
+  "rubricWeights": {
+    "correctness": 0.4,
+    "connectivity": 0.3,
+    "security": 0.2,
+    "bestPractices": 0.1
+  }
+}

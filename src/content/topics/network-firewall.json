@@ -1,0 +1,28 @@
+{
+  "id": "network-firewall",
+  "title": "AWS Network Firewall",
+  "sectionId": "networking",
+  "clusterId": "cluster-6",
+  "order": 18,
+  "explanation": "AWS Network Firewall is a managed stateful firewall service for VPCs. It provides fine-grained control over network traffic with support for intrusion prevention (IPS), stateful inspection, and custom rule groups.",
+  "analogy": "Network Firewall is like a sophisticated security checkpoint with X-ray machines — it inspects the contents of every package (packet) passing through, not just the address label.",
+  "diagram": "/diagrams/network-firewall-overview.svg",
+  "keyPoints": [
+    "Managed service — AWS handles scaling, patching, and availability",
+    "Supports stateful rules, stateless rules, and Suricata-compatible IPS rules",
+    "Deployed in a dedicated firewall subnet with routing through Gateway Load Balancer endpoints",
+    "Integrates with AWS Firewall Manager for multi-account governance"
+  ],
+  "examKeywords": [
+    {
+      "term": "Network Firewall",
+      "type": "service-reference",
+      "definition": "A managed stateful network firewall and IPS service for VPCs, supporting deep packet inspection and Suricata-compatible rules."
+    }
+  ],
+  "commonMistakes": [
+    "Deploying Network Firewall without a dedicated firewall subnet",
+    "Confusing Network Firewall (Layer 3-7 inspection) with security groups (Layer 4 only)"
+  ],
+  "relatedTopics": ["network-acls", "security-groups", "vpc-endpoints"]
+}

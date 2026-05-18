@@ -1,0 +1,17 @@
+{
+  "id": "diagram-8",
+  "clusterId": "cluster-2",
+  "title": "Multi-AZ High Availability with NAT",
+  "prompt": "Design a highly available architecture with NAT Gateways in each AZ. Show how private subnet instances in each AZ use their local NAT Gateway, eliminating cross-AZ dependencies and single points of failure.",
+  "requiredComponents": ["vpc", "public-subnet", "private-subnet", "nat-gateway", "internet-gateway"],
+  "hints": [
+    "Deploy one NAT Gateway per AZ in the public subnet",
+    "Route each private subnet to its local AZ NAT Gateway",
+    "Show that if one AZ fails, the other AZ continues to function independently",
+    "Include the Internet Gateway that all NAT Gateways route through"
+  ],
+  "expectedConnections": [
+    { "sourceType": "private-subnet", "targetType": "nat-gateway", "connectionTypeId": "routes-to" },
+    { "sourceType": "nat-gateway", "targetType": "internet-gateway", "connectionTypeId": "routes-to" }
+  ]
+}

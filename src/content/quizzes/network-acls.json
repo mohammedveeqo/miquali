@@ -1,0 +1,44 @@
+[
+  {
+    "id": "nacl-q1",
+    "topicId": "network-acls",
+    "question": "Are Network ACLs stateful or stateless?",
+    "options": [
+      { "id": "a", "text": "Stateful" },
+      { "id": "b", "text": "Stateless" },
+      { "id": "c", "text": "Stateful for TCP, stateless for UDP" },
+      { "id": "d", "text": "Depends on the rule configuration" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Network ACLs are stateless — inbound and outbound rules are evaluated independently. You must explicitly allow return traffic.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "nacl-q2",
+    "topicId": "network-acls",
+    "question": "In what order are NACL rules evaluated?",
+    "options": [
+      { "id": "a", "text": "Alphabetically by rule name" },
+      { "id": "b", "text": "By rule number, lowest first" },
+      { "id": "c", "text": "Most specific rule first" },
+      { "id": "d", "text": "Random order" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "NACL rules are evaluated in order by rule number, starting with the lowest. The first matching rule is applied and subsequent rules are not evaluated.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "nacl-q3",
+    "topicId": "network-acls",
+    "question": "At what level do Network ACLs operate?",
+    "options": [
+      { "id": "a", "text": "Instance level" },
+      { "id": "b", "text": "VPC level" },
+      { "id": "c", "text": "Subnet level" },
+      { "id": "d", "text": "Region level" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Network ACLs operate at the subnet level. Each subnet is associated with exactly one NACL, and the NACL applies to all traffic entering or leaving that subnet.",
+    "difficulty": "easy"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ga-q1",
+    "topicId": "global-accelerator",
+    "question": "What type of IP addresses does Global Accelerator provide?",
+    "options": [
+      { "id": "a", "text": "Dynamic IP addresses that change per request" },
+      { "id": "b", "text": "Two static anycast IP addresses" },
+      { "id": "c", "text": "One Elastic IP per Region" },
+      { "id": "d", "text": "IPv6 addresses only" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Global Accelerator provides two static anycast IP addresses that serve as a fixed entry point to your application, regardless of the backend endpoint locations.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "ga-q2",
+    "topicId": "global-accelerator",
+    "question": "How does Global Accelerator differ from CloudFront?",
+    "options": [
+      { "id": "a", "text": "Global Accelerator caches content; CloudFront does not" },
+      { "id": "b", "text": "Global Accelerator optimizes the network path; CloudFront caches content at edge" },
+      { "id": "c", "text": "They are the same service with different names" },
+      { "id": "d", "text": "CloudFront is Layer 4; Global Accelerator is Layer 7" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Global Accelerator optimizes the network path (Layer 4) by routing through the AWS backbone, while CloudFront caches content at edge locations (Layer 7). GA does not cache.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "ga-q3",
+    "topicId": "global-accelerator",
+    "question": "What endpoint types does Global Accelerator support?",
+    "options": [
+      { "id": "a", "text": "Only EC2 instances" },
+      { "id": "b", "text": "ALB, NLB, EC2, and Elastic IP" },
+      { "id": "c", "text": "Only load balancers" },
+      { "id": "d", "text": "S3 buckets and Lambda functions" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Global Accelerator supports Application Load Balancers, Network Load Balancers, EC2 instances, and Elastic IP addresses as endpoints.",
+    "difficulty": "easy"
+  }
+]

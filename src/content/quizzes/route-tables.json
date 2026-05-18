@@ -1,0 +1,44 @@
+[
+  {
+    "id": "rt-q1",
+    "topicId": "route-tables",
+    "question": "How are routes evaluated in a route table?",
+    "options": [
+      { "id": "a", "text": "First match wins" },
+      { "id": "b", "text": "Longest prefix match" },
+      { "id": "c", "text": "Random selection" },
+      { "id": "d", "text": "Last match wins" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Routes are evaluated using longest prefix match — the most specific route matching the destination IP is selected.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "rt-q2",
+    "topicId": "route-tables",
+    "question": "Can the local route in a route table be removed?",
+    "options": [
+      { "id": "a", "text": "Yes, if you add a custom route" },
+      { "id": "b", "text": "No, the local route is always present and cannot be removed" },
+      { "id": "c", "text": "Yes, but only in custom route tables" },
+      { "id": "d", "text": "Only by deleting the VPC" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The local route (matching the VPC CIDR) is automatically present in every route table and cannot be removed. It ensures intra-VPC communication always works.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "rt-q3",
+    "topicId": "route-tables",
+    "question": "What happens to a subnet without an explicit route table association?",
+    "options": [
+      { "id": "a", "text": "It has no routing and cannot send traffic" },
+      { "id": "b", "text": "It is automatically associated with the main route table" },
+      { "id": "c", "text": "AWS creates a new route table for it" },
+      { "id": "d", "text": "It inherits the route table of the nearest subnet" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Subnets without an explicit route table association are automatically associated with the VPC's main route table.",
+    "difficulty": "easy"
+  }
+]

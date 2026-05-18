@@ -1,0 +1,51 @@
+{
+  "id": "internet-gateway",
+  "title": "Internet Gateway",
+  "sectionId": "networking",
+  "clusterId": "cluster-1",
+  "order": 3,
+  "explanation": "An Internet Gateway (IGW) is a horizontally scaled, redundant, and highly available VPC component that allows communication between your VPC and the internet. It serves two purposes: providing a target in your route tables for internet-routable traffic, and performing network address translation (NAT) for instances with public IPv4 addresses.\n\nKey characteristics:\n- **One per VPC**: You can attach only one IGW to a VPC at a time\n- **Highly available**: AWS manages redundancy across AZs — no single point of failure\n- **No bandwidth constraints**: It does not impose availability risks or bandwidth limits on your network traffic\n- **Stateful**: Return traffic for an outbound request is automatically allowed\n\nHow an IGW enables internet access:\n1. Attach an IGW to your VPC\n2. Add a route in the subnet's route table: 0.0.0.0/0 → IGW\n3. Ensure the instance has a public IPv4 address (or Elastic IP)\n4. Ensure the security group allows the desired inbound/outbound traffic\n5. Ensure the Network ACL allows the traffic\n\nThe IGW performs 1:1 NAT — it maps the instance's private IP to its public IP for outbound traffic and reverses the mapping for inbound traffic. This is why instances in a public subnet need a public IP to communicate with the internet.\n\nFor the SAP-C02 exam, understand that an IGW alone does not make a subnet public — the route table must have a 0.0.0.0/0 route pointing to the IGW. Also know that an Egress-Only Internet Gateway is the IPv6 equivalent of a NAT Gateway (allows outbound IPv6 but blocks inbound).",
+  "analogy": "An Internet Gateway is like the main gate of your gated community that connects to the public road (internet). The gate is always open and never becomes a bottleneck (highly available, no bandwidth limits). However, just having a gate does not mean every house can use it — only houses on streets (subnets) with road signs (route table entries) pointing to the gate, and houses that have a visible street address (public IP), can send and receive mail (traffic) through it.",
+  "diagram": "/diagrams/igw-overview.svg",
+  "keyPoints": [
+    "An Internet Gateway is horizontally scaled, redundant, and highly available — no single point of failure",
+    "Only one IGW can be attached to a VPC at a time",
+    "An IGW performs 1:1 NAT between private and public IPv4 addresses",
+    "A subnet is public only if its route table has 0.0.0.0/0 → IGW AND instances have public IPs",
+    "An IGW imposes no bandwidth constraints on network traffic",
+    "Egress-Only Internet Gateway is for IPv6 outbound-only traffic (blocks unsolicited inbound)",
+    "Detaching an IGW immediately cuts internet access for all public subnets in the VPC"
+  ],
+  "examKeywords": [
+    {
+      "term": "Internet Gateway",
+      "type": "service-reference",
+      "definition": "A VPC component enabling communication between VPC resources and the internet. Horizontally scaled and highly available with no bandwidth constraints.",
+      "svgDiagram": "/diagrams/mini/igw-icon.svg"
+    },
+    {
+      "term": "NAT (Network Address Translation)",
+      "type": "exam-signal",
+      "definition": "The process of mapping private IP addresses to public IP addresses. An IGW performs 1:1 NAT for instances with public IPv4 addresses."
+    },
+    {
+      "term": "Egress-Only Internet Gateway",
+      "type": "service-reference",
+      "definition": "A VPC component that allows outbound IPv6 traffic while preventing unsolicited inbound IPv6 connections. The IPv6 equivalent of a NAT Gateway."
+    },
+    {
+      "term": "Elastic IP",
+      "type": "service-reference",
+      "definition": "A static public IPv4 address that you can allocate and associate with an instance or network interface. Persists across stop/start cycles.",
+      "svgDiagram": "/diagrams/mini/eip-icon.svg"
+    }
+  ],
+  "commonMistakes": [
+    "Thinking an IGW alone makes a subnet public — the route table must also have a 0.0.0.0/0 route to the IGW",
+    "Trying to attach multiple IGWs to a single VPC — only one is allowed",
+    "Forgetting that instances need a public IPv4 address (or Elastic IP) in addition to the IGW route",
+    "Confusing Internet Gateway (for public subnets) with NAT Gateway (for private subnets needing outbound internet)",
+    "Not understanding that an IGW is stateful — return traffic is automatically allowed without explicit inbound rules for the response"
+  ],
+  "relatedTopics": ["what-is-vpc", "subnets", "nat-gateway", "route-tables"]
+}

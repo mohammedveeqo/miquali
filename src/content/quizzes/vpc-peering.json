@@ -1,0 +1,44 @@
+[
+  {
+    "id": "peer-q1",
+    "topicId": "vpc-peering",
+    "question": "Is VPC peering transitive?",
+    "options": [
+      { "id": "a", "text": "Yes, traffic flows through intermediate VPCs" },
+      { "id": "b", "text": "No, each VPC pair requires its own peering connection" },
+      { "id": "c", "text": "Only within the same Region" },
+      { "id": "d", "text": "Only if Transit Gateway is enabled" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "VPC peering is non-transitive. If VPC A peers with VPC B, and VPC B peers with VPC C, VPC A cannot reach VPC C through VPC B.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "peer-q2",
+    "topicId": "vpc-peering",
+    "question": "Can you peer VPCs across different AWS Regions?",
+    "options": [
+      { "id": "a", "text": "No, peering is Region-scoped only" },
+      { "id": "b", "text": "Yes, inter-Region VPC peering is supported" },
+      { "id": "c", "text": "Only with Transit Gateway" },
+      { "id": "d", "text": "Only within the same account" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Inter-Region VPC peering is supported. You can peer VPCs across different AWS Regions and even across different AWS accounts.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "peer-q3",
+    "topicId": "vpc-peering",
+    "question": "What is required for VPC peering to work?",
+    "options": [
+      { "id": "a", "text": "VPCs must be in the same Region" },
+      { "id": "b", "text": "VPCs must have non-overlapping CIDR blocks" },
+      { "id": "c", "text": "VPCs must be in the same account" },
+      { "id": "d", "text": "VPCs must have the same CIDR block size" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The CIDR blocks of peered VPCs must not overlap. This is a hard requirement — you cannot create a peering connection between VPCs with overlapping address ranges.",
+    "difficulty": "medium"
+  }
+]

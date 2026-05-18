@@ -1,0 +1,49 @@
+{
+  "id": "subnets",
+  "title": "Subnets",
+  "sectionId": "networking",
+  "clusterId": "cluster-1",
+  "order": 2,
+  "explanation": "A subnet is a range of IP addresses within your VPC. Each subnet must reside entirely within one Availability Zone and cannot span zones. Subnets are where you actually launch AWS resources like EC2 instances, RDS databases, and Lambda functions (when VPC-attached).\n\nSubnets are classified by their routing behavior:\n- **Public subnet**: Has a route to an Internet Gateway, allowing resources with public IPs to communicate with the internet\n- **Private subnet**: No route to an Internet Gateway; resources cannot be reached from the internet directly\n- **Isolated subnet**: No route to the internet at all (no IGW, no NAT) — used for databases and sensitive workloads\n\nWhen you create a subnet, you specify a CIDR block that is a subset of the VPC CIDR. For example, if your VPC is 10.0.0.0/16, you might create subnets like 10.0.1.0/24 (256 addresses) or 10.0.2.0/24.\n\nAWS reserves 5 IP addresses in each subnet:\n- .0 — Network address\n- .1 — VPC router\n- .2 — DNS server\n- .3 — Reserved for future use\n- .255 — Network broadcast (AWS does not support broadcast)\n\nFor the SAP-C02 exam, multi-AZ subnet design is critical. Best practice is to create at least one public and one private subnet in each AZ you use, enabling high availability and proper network segmentation.",
+  "analogy": "If a VPC is your plot of land, subnets are the individual rooms or zones within your property. A public subnet is like your front yard — visible and accessible from the street (internet). A private subnet is like your house interior — you can go out to the street, but strangers cannot walk in directly. An isolated subnet is like a vault in your basement — completely cut off from the outside world, accessible only from within the property.",
+  "diagram": "/diagrams/subnets-overview.svg",
+  "keyPoints": [
+    "A subnet exists in exactly one Availability Zone and cannot span multiple AZs",
+    "Public subnets have a route to an Internet Gateway; private subnets do not",
+    "AWS reserves 5 IP addresses per subnet (first 4 and last 1)",
+    "A /24 subnet provides 251 usable IP addresses (256 minus 5 reserved)",
+    "Best practice: create public and private subnets in at least 2 AZs for high availability",
+    "Subnet CIDR blocks cannot overlap within the same VPC",
+    "You can enable auto-assign public IPv4 on a subnet to make it behave as public"
+  ],
+  "examKeywords": [
+    {
+      "term": "Availability Zone",
+      "type": "exam-signal",
+      "definition": "An isolated location within an AWS Region with independent power, cooling, and networking. Subnets are AZ-scoped."
+    },
+    {
+      "term": "public subnet",
+      "type": "architecture-term",
+      "definition": "A subnet with a route table entry directing 0.0.0.0/0 traffic to an Internet Gateway, enabling internet-facing resources."
+    },
+    {
+      "term": "private subnet",
+      "type": "architecture-term",
+      "definition": "A subnet without a direct route to an Internet Gateway. Resources can access the internet only via a NAT Gateway in a public subnet."
+    },
+    {
+      "term": "CIDR notation",
+      "type": "exam-signal",
+      "definition": "IP address range notation (e.g., 10.0.1.0/24) where the number after the slash indicates how many bits are fixed in the network prefix."
+    }
+  ],
+  "commonMistakes": [
+    "Thinking subnets span multiple AZs — each subnet is in exactly one AZ",
+    "Forgetting the 5 reserved IPs per subnet when calculating available addresses",
+    "Creating subnets that are too small (/28 = only 11 usable IPs) for workloads that may scale",
+    "Not distributing subnets across multiple AZs, creating a single point of failure",
+    "Confusing 'public subnet' with 'subnet that has a public IP' — it is the route table that determines public vs private"
+  ],
+  "relatedTopics": ["what-is-vpc", "internet-gateway", "nat-gateway", "route-tables"]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "capstone-4",
+  "title": "Zero-Trust Network Architecture",
+  "scenario": "A government agency requires a zero-trust network architecture where no implicit trust is granted based on network location. All traffic must be inspected, all access must be authenticated, and all communication must be encrypted. Design a VPC architecture that implements zero-trust networking principles.",
+  "requirements": [
+    "AWS Network Firewall for all east-west and north-south traffic inspection",
+    "PrivateLink for all AWS service access (no internet paths)",
+    "Micro-segmentation using security groups (one per workload)",
+    "No public subnets — all ingress through Network Firewall",
+    "VPC Flow Logs enabled on all subnets for audit",
+    "Separate VPCs for each trust boundary with Transit Gateway routing"
+  ],
+  "rubricWeights": {
+    "correctness": 0.4,
+    "connectivity": 0.3,
+    "security": 0.2,
+    "bestPractices": 0.1
+  }
+}

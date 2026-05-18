@@ -1,0 +1,45 @@
+{
+  "id": "what-is-vpc",
+  "title": "What is a VPC?",
+  "sectionId": "networking",
+  "clusterId": "cluster-1",
+  "order": 1,
+  "explanation": "A Virtual Private Cloud (VPC) is a logically isolated section of the AWS cloud where you can launch AWS resources in a virtual network that you define. You have complete control over your virtual networking environment, including selection of your own IP address range, creation of subnets, and configuration of route tables and network gateways.\n\nA VPC spans all Availability Zones in a Region. When you create a VPC, you must specify an IPv4 CIDR block (a range of private IPv4 addresses). The allowed block size is between a /16 netmask (65,536 addresses) and /28 netmask (16 addresses).\n\nKey characteristics of a VPC:\n- **Region-scoped**: A VPC exists within a single AWS Region but spans all AZs in that Region\n- **CIDR block**: Defines the IP address range (e.g., 10.0.0.0/16)\n- **Isolation**: Resources in one VPC cannot communicate with resources in another VPC by default\n- **Default VPC**: AWS creates a default VPC in each Region with a /16 CIDR block (172.31.0.0/16)\n- **Custom VPC**: You create custom VPCs with your chosen CIDR block for production workloads\n\nFor the SAP-C02 exam, understand that VPC design is foundational to every architecture question. Multi-VPC strategies, CIDR planning to avoid overlaps, and VPC limits (5 per Region by default, increasable) are frequently tested.",
+  "analogy": "Think of a VPC like owning a plot of land in a gated community (AWS Region). The land is yours to build on however you want — you decide where to put buildings (subnets), roads (route tables), gates (internet gateways), and fences (security groups). Your neighbors (other AWS accounts) have their own plots, and by default you cannot walk onto their land or vice versa. The gated community provides shared infrastructure (AWS backbone network), but within your plot, you have full architectural freedom.",
+  "diagram": "/diagrams/vpc-overview.svg",
+  "keyPoints": [
+    "A VPC is Region-scoped and spans all Availability Zones in that Region",
+    "You must specify an IPv4 CIDR block between /16 and /28 when creating a VPC",
+    "Resources in different VPCs cannot communicate by default — isolation is the default posture",
+    "AWS creates a default VPC (172.31.0.0/16) in each Region with public subnets",
+    "You can add secondary CIDR blocks to an existing VPC if you need more IP addresses",
+    "VPC limit is 5 per Region by default but can be increased via a service quota request",
+    "IPv6 CIDR blocks can be associated with a VPC (Amazon-provided or BYOIP)"
+  ],
+  "examKeywords": [
+    {
+      "term": "CIDR block",
+      "type": "exam-signal",
+      "definition": "Classless Inter-Domain Routing notation specifying an IP address range. For VPCs, the primary CIDR must be between /16 and /28."
+    },
+    {
+      "term": "Amazon VPC",
+      "type": "service-reference",
+      "definition": "AWS service that lets you provision a logically isolated section of the AWS Cloud where you launch resources in a virtual network you define.",
+      "svgDiagram": "/diagrams/mini/vpc-icon.svg"
+    },
+    {
+      "term": "network isolation",
+      "type": "architecture-term",
+      "definition": "The principle that resources in separate VPCs cannot communicate by default, providing a security boundary between workloads."
+    }
+  ],
+  "commonMistakes": [
+    "Choosing a CIDR block that overlaps with on-premises networks, making hybrid connectivity impossible",
+    "Using the default VPC for production workloads instead of creating a custom VPC with proper CIDR planning",
+    "Forgetting that a VPC is Region-scoped, not AZ-scoped — subnets are AZ-scoped",
+    "Not planning for IP address exhaustion — once a VPC CIDR is set, the primary block cannot be changed",
+    "Confusing VPC peering (connects two VPCs) with Transit Gateway (hub-and-spoke for many VPCs)"
+  ],
+  "relatedTopics": ["subnets", "internet-gateway", "vpc-peering", "transit-gateway"]
+}

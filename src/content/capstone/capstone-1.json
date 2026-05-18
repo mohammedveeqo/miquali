@@ -1,0 +1,19 @@
+{
+  "id": "capstone-1",
+  "title": "Multi-Region Disaster Recovery Architecture",
+  "scenario": "A financial services company requires a multi-Region active-passive disaster recovery architecture for their trading platform. The primary Region handles all traffic, with automatic failover to the secondary Region if the primary becomes unavailable. The RTO is 5 minutes and RPO is 1 minute. Design the networking layer including DNS failover, cross-Region connectivity, and data replication paths.",
+  "requirements": [
+    "Primary and secondary VPCs in different AWS Regions with non-overlapping CIDRs",
+    "Route 53 health checks with automatic DNS failover",
+    "Cross-Region VPC connectivity for data replication",
+    "Application Load Balancers in both Regions",
+    "Private subnets for databases with cross-Region replication path",
+    "Security groups and NACLs following least-privilege principles"
+  ],
+  "rubricWeights": {
+    "correctness": 0.4,
+    "connectivity": 0.3,
+    "security": 0.2,
+    "bestPractices": 0.1
+  }
+}

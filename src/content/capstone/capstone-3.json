@@ -1,0 +1,19 @@
+{
+  "id": "capstone-3",
+  "title": "Global SaaS Platform Networking",
+  "scenario": "A SaaS company serves customers in North America, Europe, and Asia-Pacific. They need a global networking architecture that minimizes latency for all users, supports multi-tenant isolation, and complies with data residency requirements (EU data must stay in EU). Design the networking layer for this global platform.",
+  "requirements": [
+    "VPCs in three Regions (us-east-1, eu-west-1, ap-southeast-1)",
+    "Global Accelerator or CloudFront for global traffic optimization",
+    "Route 53 with latency-based routing",
+    "Transit Gateway inter-Region peering for backend communication",
+    "Tenant isolation using security groups and subnet segmentation",
+    "VPC endpoints for AWS service access in each Region"
+  ],
+  "rubricWeights": {
+    "correctness": 0.4,
+    "connectivity": 0.3,
+    "security": 0.2,
+    "bestPractices": 0.1
+  }
+}

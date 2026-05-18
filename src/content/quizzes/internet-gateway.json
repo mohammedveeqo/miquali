@@ -1,0 +1,114 @@
+[
+  {
+    "id": "igw-q1",
+    "topicId": "internet-gateway",
+    "question": "How many Internet Gateways can be attached to a single VPC?",
+    "options": [
+      { "id": "a", "text": "Unlimited" },
+      { "id": "b", "text": "One per Availability Zone" },
+      { "id": "c", "text": "Exactly one" },
+      { "id": "d", "text": "Two for redundancy" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Only one Internet Gateway can be attached to a VPC at a time. The IGW itself is highly available and redundant — you do not need multiple.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "igw-q2",
+    "topicId": "internet-gateway",
+    "question": "What type of NAT does an Internet Gateway perform?",
+    "options": [
+      { "id": "a", "text": "Many-to-one NAT (PAT)" },
+      { "id": "b", "text": "1:1 NAT between private and public IPv4 addresses" },
+      { "id": "c", "text": "No NAT — it only routes traffic" },
+      { "id": "d", "text": "Dynamic NAT with port randomization" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "An IGW performs 1:1 NAT — it maps an instance's private IP to its associated public IP for outbound traffic and reverses the mapping for inbound traffic.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "igw-q3",
+    "topicId": "internet-gateway",
+    "question": "Which combination is required for an EC2 instance to access the internet via an IGW?",
+    "options": [
+      { "id": "a", "text": "IGW attached + route table entry + public IP + security group allowing traffic" },
+      { "id": "b", "text": "IGW attached + public IP only" },
+      { "id": "c", "text": "IGW attached + route table entry only" },
+      { "id": "d", "text": "IGW attached + NAT Gateway + private IP" }
+    ],
+    "correctOptionId": "a",
+    "explanation": "All four elements are needed: IGW attached to VPC, route table with 0.0.0.0/0 → IGW, a public IPv4 address on the instance, and security group rules allowing the traffic.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "igw-q4",
+    "topicId": "internet-gateway",
+    "question": "Is an Internet Gateway a potential bandwidth bottleneck?",
+    "options": [
+      { "id": "a", "text": "Yes, it is limited to 10 Gbps" },
+      { "id": "b", "text": "Yes, it shares bandwidth across all instances" },
+      { "id": "c", "text": "No, it imposes no bandwidth constraints" },
+      { "id": "d", "text": "Only during peak hours" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "An Internet Gateway is horizontally scaled, redundant, and highly available. It does not impose availability risks or bandwidth constraints on your network traffic.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "igw-q5",
+    "topicId": "internet-gateway",
+    "question": "What is an Egress-Only Internet Gateway used for?",
+    "options": [
+      { "id": "a", "text": "Allowing only outbound IPv4 traffic from private subnets" },
+      { "id": "b", "text": "Allowing outbound IPv6 traffic while blocking unsolicited inbound IPv6" },
+      { "id": "c", "text": "Restricting internet access to specific IP ranges" },
+      { "id": "d", "text": "Providing internet access without a public IP" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "An Egress-Only Internet Gateway allows outbound IPv6 traffic while preventing unsolicited inbound IPv6 connections. It is the IPv6 equivalent of a NAT Gateway.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "igw-q6",
+    "topicId": "internet-gateway",
+    "question": "What happens when you detach an Internet Gateway from a VPC?",
+    "options": [
+      { "id": "a", "text": "Nothing — instances keep their public IPs and internet access" },
+      { "id": "b", "text": "Internet access is immediately cut for all public subnets" },
+      { "id": "c", "text": "Only new connections are blocked; existing ones continue" },
+      { "id": "d", "text": "AWS automatically creates a NAT Gateway as replacement" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Detaching an IGW immediately cuts internet access for all public subnets in the VPC. Existing connections are terminated and no new connections can be established.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "igw-q7",
+    "topicId": "internet-gateway",
+    "question": "Does an Internet Gateway alone make a subnet public?",
+    "options": [
+      { "id": "a", "text": "Yes, attaching an IGW makes all subnets public" },
+      { "id": "b", "text": "No, the subnet's route table must also have a 0.0.0.0/0 route to the IGW" },
+      { "id": "c", "text": "Yes, but only for the default subnet" },
+      { "id": "d", "text": "No, you also need a NAT Gateway" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "An IGW alone does not make a subnet public. The subnet's route table must have a 0.0.0.0/0 route pointing to the IGW, and instances need public IPs for actual internet communication.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "igw-q8",
+    "topicId": "internet-gateway",
+    "question": "Is an Internet Gateway stateful or stateless?",
+    "options": [
+      { "id": "a", "text": "Stateless — you must allow return traffic explicitly" },
+      { "id": "b", "text": "Stateful — return traffic for outbound requests is automatically allowed" },
+      { "id": "c", "text": "Neither — it only performs routing" },
+      { "id": "d", "text": "Stateful for TCP, stateless for UDP" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "An Internet Gateway is stateful. Return traffic for an outbound request is automatically allowed without needing explicit inbound rules for the response.",
+    "difficulty": "hard"
+  }
+]

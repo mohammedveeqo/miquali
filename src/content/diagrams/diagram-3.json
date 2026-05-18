@@ -1,0 +1,17 @@
+{
+  "id": "diagram-3",
+  "clusterId": "cluster-3",
+  "title": "Multi-VPC Connectivity with Transit Gateway",
+  "prompt": "Design a multi-VPC architecture using Transit Gateway as a central hub. Show three VPCs connected through the Transit Gateway, demonstrating transitive routing capabilities that VPC peering cannot provide.",
+  "requiredComponents": ["vpc", "transit-gateway", "subnet", "route-table"],
+  "hints": [
+    "Place a Transit Gateway as the central hub",
+    "Create three separate VPCs with non-overlapping CIDRs",
+    "Attach each VPC to the Transit Gateway",
+    "Show that VPC A can reach VPC C through the Transit Gateway (transitive routing)"
+  ],
+  "expectedConnections": [
+    { "sourceType": "vpc", "targetType": "transit-gateway", "connectionTypeId": "attached-to" },
+    { "sourceType": "vpc", "targetType": "transit-gateway", "connectionTypeId": "attached-to" }
+  ]
+}

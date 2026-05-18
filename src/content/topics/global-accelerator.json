@@ -1,0 +1,28 @@
+{
+  "id": "global-accelerator",
+  "title": "Global Accelerator",
+  "sectionId": "networking",
+  "clusterId": "cluster-6",
+  "order": 16,
+  "explanation": "AWS Global Accelerator is a networking service that improves the availability and performance of applications by directing traffic through the AWS global network instead of the public internet. It provides static anycast IP addresses.",
+  "analogy": "Global Accelerator is like an express highway on-ramp — instead of navigating through city streets (public internet), traffic enters the fast lane (AWS backbone) at the nearest on-ramp (edge location).",
+  "diagram": "/diagrams/global-accelerator-overview.svg",
+  "keyPoints": [
+    "Provides two static anycast IP addresses for your application",
+    "Routes traffic through the AWS global network for improved performance",
+    "Supports instant failover between endpoints across Regions",
+    "Works with ALB, NLB, EC2, and Elastic IP endpoints"
+  ],
+  "examKeywords": [
+    {
+      "term": "Global Accelerator",
+      "type": "service-reference",
+      "definition": "A networking service providing static anycast IPs and routing traffic through the AWS global network for improved availability and performance."
+    }
+  ],
+  "commonMistakes": [
+    "Confusing Global Accelerator (Layer 4, anycast IPs) with CloudFront (Layer 7, content caching)",
+    "Not understanding that Global Accelerator does not cache content — it optimizes the network path"
+  ],
+  "relatedTopics": ["cloudfront", "route-53", "elastic-load-balancing"]
+}
