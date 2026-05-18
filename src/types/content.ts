@@ -140,6 +140,20 @@ export interface Flashcard {
   category: string;
 }
 
+/** A Q&A question for the topic assessment tab */
+export interface QAQuestion {
+  /** Unique question identifier */
+  id: string;
+  /** The question text presented to the learner */
+  question: string;
+  /** Question type for categorization */
+  type: 'conceptual' | 'scenario' | 'cross-topic' | 'what-breaks';
+  /** Key concepts the answer should demonstrate understanding of */
+  keyConcepts: string[];
+  /** Criteria the AI uses to determine a pass */
+  passCriteria: string;
+}
+
 /** A glossary entry for the searchable reference view */
 export interface GlossaryEntry {
   /** Unique entry identifier */

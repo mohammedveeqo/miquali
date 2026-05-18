@@ -47,5 +47,42 @@
     "Confusing Internet Gateway (for public subnets) with NAT Gateway (for private subnets needing outbound internet)",
     "Not understanding that an IGW is stateful — return traffic is automatically allowed without explicit inbound rules for the response"
   ],
-  "relatedTopics": ["what-is-vpc", "subnets", "nat-gateway", "route-tables"]
+  "relatedTopics": ["what-is-vpc", "subnets", "nat-gateway", "route-tables"],
+  "qaQuestions": [
+    {
+      "id": "igw-q1",
+      "question": "Explain the step-by-step process required for an EC2 instance to communicate with the internet via an Internet Gateway. What happens if any step is missing?",
+      "type": "conceptual",
+      "keyConcepts": ["IGW attachment", "route table", "public IP", "security group", "NACL"],
+      "passCriteria": "Must list the 5 steps (attach IGW, route 0.0.0.0/0 to IGW, public IP on instance, SG allows traffic, NACL allows traffic) and explain that missing any one breaks internet connectivity."
+    },
+    {
+      "id": "igw-q2",
+      "question": "What is the difference between an Internet Gateway and a NAT Gateway? When would you use each?",
+      "type": "cross-topic",
+      "keyConcepts": ["IGW", "NAT Gateway", "public subnet", "private subnet", "bidirectional vs outbound-only"],
+      "passCriteria": "Must explain that IGW enables bidirectional internet access for public subnets, while NAT Gateway enables outbound-only internet for private subnets. Must mention that NAT GW sits in a public subnet and routes through the IGW."
+    },
+    {
+      "id": "igw-q3",
+      "question": "A solutions architect tries to attach a second Internet Gateway to a VPC that already has one. What happens and why?",
+      "type": "what-breaks",
+      "keyConcepts": ["one IGW per VPC", "VPC limitation", "API error"],
+      "passCriteria": "Must explain that only one IGW can be attached to a VPC at a time — the API call will fail. Must note this is a hard AWS limit, not a soft limit that can be increased."
+    },
+    {
+      "id": "igw-q4",
+      "question": "How does an Internet Gateway perform NAT, and why do instances need a public IP address for this to work?",
+      "type": "conceptual",
+      "keyConcepts": ["1:1 NAT", "private IP to public IP mapping", "Elastic IP", "stateful"],
+      "passCriteria": "Must explain that the IGW performs 1:1 NAT mapping the instance's private IP to its public IP for outbound traffic and reversing for inbound. Without a public IP, there's nothing to map to, so the IGW can't translate the traffic."
+    },
+    {
+      "id": "igw-q5",
+      "question": "What is an Egress-Only Internet Gateway and how does it differ from a regular Internet Gateway?",
+      "type": "conceptual",
+      "keyConcepts": ["Egress-Only IGW", "IPv6", "outbound only", "stateful", "blocks inbound"],
+      "passCriteria": "Must explain that an Egress-Only IGW is for IPv6 traffic only, allows outbound connections but blocks unsolicited inbound, and is the IPv6 equivalent of a NAT Gateway (not a regular IGW)."
+    }
+  ]
 }

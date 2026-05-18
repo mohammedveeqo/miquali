@@ -3,19 +3,20 @@
 /**
  * Sidebar — Fixed left navigation panel for the docs-site layout.
  * Lists all 18 topics from progression.json with completion status indicators.
- * All topics are freely navigable (no gating).
+ * All topics are freely navigable (no hard gating).
  * Collapsible on mobile via hamburger menu.
  *
  * Status indicators:
- * ● completed (miniQuizPassed)
- * ◐ in progress (readComplete or conceptChatPassed but not miniQuizPassed)
- * ○ not started
+ * ✅ = completed (3 Q&A passes / miniQuizPassed)
+ * ← = current (active topic being viewed)
+ * 🔒 = locked (previous not complete) — still clickable
+ * ○ = not started
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, BookOpen, Search, Brain } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 import { useProgressStore } from '@/stores/progress-store';
 import type { ProgressionConfig } from '@/types';
@@ -25,11 +26,8 @@ import progressionData from '@/content/progression.json';
 const config: ProgressionConfig = progressionData as ProgressionConfig;
 
 /** All topic IDs in order from the progression config */
-const ALL_TOPICS: { id: string; sectionName: string }[] = config.sections.flatMap(
-  (section) =>
-    section.clusters.flatMap((cluster) =>
-      cluster.topicIds.map((id) => ({ id, sectionName: section.name }))
-    )
+const ALL_TOPIC_IDS: string[] = config.sections.flatMap((section) =>
+  section.clusters.flatMap((cluster) => cluster.topicIds)
 );
 
 /** Format a topic ID into a readable title */
@@ -57,17 +55,40 @@ export function Sidebar() {
     setIsMobileOpen(false);
   }, []);
 
+  /** Calculate overall progress */
+  const overallProgress = useMemo(() => {
+    const completed = ALL_TOPIC_IDS.filter(
+      (id) => topicProgress[id]?.miniQuizPassed
+    ).length;
+    return { completed, total: ALL_TOPIC_IDS.length };
+  }, [topicProgress]);
+
   /**
    * Determine the status indicator for a topic.
+   * ✅ = completed, ← = current, 🔒 = locked (prev not done), ○ = not started
    */
   function getStatusIndicator(topicId: string): { symbol: string; label: string; className: string } {
+    const isActive = pathname === `/topics/${topicId}`;
+
+    if (isActive) {
+      return { symbol: '←', label: 'current', className: 'text-blue-400' };
+    }
+
     const progress = topicProgress[topicId];
     if (progress?.miniQuizPassed) {
-      return { symbol: '●', label: 'completed', className: 'text-green-500' };
+      return { symbol: '✅', label: 'completed', className: '' };
     }
-    if (progress?.readComplete || progress?.conceptChatPassed) {
-      return { symbol: '◐', label: 'in progress', className: 'text-amber-400' };
+
+    // Check if previous topic is completed (for locked indicator)
+    const topicIndex = ALL_TOPIC_IDS.indexOf(topicId);
+    if (topicIndex > 0) {
+      const prevTopicId = ALL_TOPIC_IDS[topicIndex - 1];
+      const prevProgress = topicProgress[prevTopicId];
+      if (!prevProgress?.miniQuizPassed) {
+        return { symbol: '🔒', label: 'locked', className: '' };
+      }
     }
+
     return { symbol: '○', label: 'not started', className: 'text-zinc-500' };
   }
 
@@ -75,6 +96,10 @@ export function Sidebar() {
   function isActive(topicId: string): boolean {
     return pathname === `/topics/${topicId}`;
   }
+
+  const progressPercent = overallProgress.total > 0
+    ? Math.round((overallProgress.completed / overallProgress.total) * 100)
+    : 0;
 
   const sidebarContent = (
     <nav aria-label="Topic navigation" className="flex flex-col h-full">
@@ -88,7 +113,7 @@ export function Sidebar() {
           MiQuali
         </Link>
         <p className="text-xs text-muted-foreground mt-0.5">
-          AWS SAP-C02 · Networking
+          AWS SAP-C02
         </p>
       </div>
 
@@ -136,47 +161,25 @@ export function Sidebar() {
         ))}
       </div>
 
-      {/* Bottom links */}
-      <div className="border-t border-border px-3 py-4 shrink-0 space-y-1">
-        <Link
-          href="/flashcards"
-          onClick={closeMobile}
-          className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
-            pathname === '/flashcards'
-              ? 'bg-primary/10 text-primary font-medium'
-              : 'text-foreground/80 hover:bg-muted hover:text-foreground'
-          }`}
-          aria-current={pathname === '/flashcards' ? 'page' : undefined}
+      {/* Progress bar at bottom */}
+      <div className="border-t border-border px-4 py-4 shrink-0">
+        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+          <span>Progress</span>
+          <span>{overallProgress.completed}/{overallProgress.total}</span>
+        </div>
+        <div
+          className="h-2 w-full rounded-full bg-zinc-700 overflow-hidden"
+          role="progressbar"
+          aria-valuenow={progressPercent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Overall progress"
         >
-          <BookOpen className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          Flashcards
-        </Link>
-        <Link
-          href="/glossary"
-          onClick={closeMobile}
-          className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
-            pathname === '/glossary'
-              ? 'bg-primary/10 text-primary font-medium'
-              : 'text-foreground/80 hover:bg-muted hover:text-foreground'
-          }`}
-          aria-current={pathname === '/glossary' ? 'page' : undefined}
-        >
-          <Search className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          Glossary
-        </Link>
-        <Link
-          href="/section-quiz"
-          onClick={closeMobile}
-          className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
-            pathname === '/section-quiz'
-              ? 'bg-primary/10 text-primary font-medium'
-              : 'text-foreground/80 hover:bg-muted hover:text-foreground'
-          }`}
-          aria-current={pathname === '/section-quiz' ? 'page' : undefined}
-        >
-          <Brain className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          Section Quiz
-        </Link>
+          <div
+            className="h-full rounded-full bg-primary transition-all duration-300"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
       </div>
     </nav>
   );

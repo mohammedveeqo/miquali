@@ -45,5 +45,42 @@
     "Not distributing subnets across multiple AZs, creating a single point of failure",
     "Confusing 'public subnet' with 'subnet that has a public IP' — it is the route table that determines public vs private"
   ],
-  "relatedTopics": ["what-is-vpc", "internet-gateway", "nat-gateway", "route-tables"]
+  "relatedTopics": ["what-is-vpc", "internet-gateway", "nat-gateway", "route-tables"],
+  "qaQuestions": [
+    {
+      "id": "subnets-q1",
+      "question": "A developer says their EC2 instance in a 'public subnet' cannot reach the internet. What are the possible causes?",
+      "type": "scenario",
+      "keyConcepts": ["public subnet definition", "route table", "Internet Gateway", "public IP", "security groups", "NACLs"],
+      "passCriteria": "Must identify at least 3 possible causes: missing route to IGW in route table, no public/Elastic IP on the instance, security group blocking outbound, or NACL blocking traffic."
+    },
+    {
+      "id": "subnets-q2",
+      "question": "Explain why AWS reserves 5 IP addresses in every subnet and what each one is used for.",
+      "type": "conceptual",
+      "keyConcepts": ["reserved IPs", "network address", "VPC router", "DNS", "broadcast"],
+      "passCriteria": "Must list all 5 reserved addresses (.0 network, .1 router, .2 DNS, .3 future use, .255 broadcast) and explain that this means a /24 gives 251 usable IPs, not 256."
+    },
+    {
+      "id": "subnets-q3",
+      "question": "What is the difference between a private subnet and an isolated subnet? Give a use case for each.",
+      "type": "conceptual",
+      "keyConcepts": ["private subnet", "isolated subnet", "NAT Gateway", "no internet access", "database tier"],
+      "passCriteria": "Must explain that a private subnet has outbound internet via NAT Gateway (for patches/updates) while an isolated subnet has no internet route at all, and provide appropriate use cases (app tier vs database/sensitive workloads)."
+    },
+    {
+      "id": "subnets-q4",
+      "question": "You're designing a VPC for a highly available web application. How would you structure your subnets across Availability Zones and why?",
+      "type": "scenario",
+      "keyConcepts": ["multi-AZ", "high availability", "public subnet", "private subnet", "AZ-scoped"],
+      "passCriteria": "Must recommend at least 2 AZs with both public and private subnets in each, explain that subnets are AZ-scoped (can't span AZs), and note that this protects against single-AZ failure."
+    },
+    {
+      "id": "subnets-q5",
+      "question": "What happens if two subnets in the same VPC have overlapping CIDR blocks?",
+      "type": "what-breaks",
+      "keyConcepts": ["CIDR overlap", "subnet creation", "VPC validation"],
+      "passCriteria": "Must explain that AWS will reject the creation of a subnet with a CIDR that overlaps an existing subnet in the same VPC — it's not allowed and the API call will fail."
+    }
+  ]
 }

@@ -7,6 +7,7 @@
 export type {
   KeywordReference,
   TopicContent,
+  QAQuestion,
   QuizOption,
   QuizQuestion,
   ExpectedConnection,

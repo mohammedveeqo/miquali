@@ -41,5 +41,35 @@
     "Not planning for IP address exhaustion — once a VPC CIDR is set, the primary block cannot be changed",
     "Confusing VPC peering (connects two VPCs) with Transit Gateway (hub-and-spoke for many VPCs)"
   ],
-  "relatedTopics": ["subnets", "internet-gateway", "vpc-peering", "transit-gateway"]
+  "relatedTopics": ["subnets", "internet-gateway", "vpc-peering", "transit-gateway"],
+  "qaQuestions": [
+    {
+      "id": "vpc-q1",
+      "question": "A company is planning a multi-account AWS strategy. They need resources in Account A to communicate with resources in Account B. Explain why this doesn't work by default and what options exist to enable it.",
+      "type": "scenario",
+      "keyConcepts": ["VPC isolation", "VPC peering", "Transit Gateway", "cross-account networking"],
+      "passCriteria": "Must explain that VPCs are isolated by default (no inter-VPC communication), and mention at least one connectivity option (peering, Transit Gateway, or PrivateLink) with a brief explanation of how it works."
+    },
+    {
+      "id": "vpc-q2",
+      "question": "What happens if you choose a VPC CIDR block of 10.0.0.0/16 and your on-premises network also uses 10.0.0.0/16? What problems does this cause and how would you avoid it?",
+      "type": "what-breaks",
+      "keyConcepts": ["CIDR overlap", "hybrid connectivity", "VPN", "Direct Connect", "routing conflicts"],
+      "passCriteria": "Must identify that overlapping CIDRs prevent routing between the two networks (traffic can't be distinguished), and suggest planning non-overlapping CIDR ranges or using NAT to work around it."
+    },
+    {
+      "id": "vpc-q3",
+      "question": "Explain the difference between a VPC's primary CIDR block and secondary CIDR blocks. When would you add a secondary CIDR?",
+      "type": "conceptual",
+      "keyConcepts": ["primary CIDR", "secondary CIDR", "IP exhaustion", "CIDR expansion"],
+      "passCriteria": "Must explain that the primary CIDR is set at creation and cannot be changed, secondary CIDRs can be added later to expand the address space, and the typical use case is running out of IP addresses."
+    },
+    {
+      "id": "vpc-q4",
+      "question": "Your team is designing a new VPC. One architect suggests using the default VPC for production workloads. What would you advise and why?",
+      "type": "scenario",
+      "keyConcepts": ["default VPC", "custom VPC", "security", "CIDR planning", "production best practices"],
+      "passCriteria": "Must recommend against using the default VPC for production, explaining that it has a fixed CIDR (172.31.0.0/16), all subnets are public by default, and a custom VPC gives control over CIDR planning, subnet design, and security posture."
+    }
+  ]
 }

@@ -1,5 +1,5 @@
-import { ProgressDashboard } from '@/components/dashboard/ProgressDashboard';
+import { Homepage } from '@/components/home/Homepage';
 
 export default function DashboardPage() {
-  return <ProgressDashboard />;
+  return <Homepage />;
 }
